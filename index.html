@@ -66,14 +66,13 @@
             font-size: clamp(0.9rem, 2vw, 1.1rem);
         }
 
-        /* ตารางหลัก (Mobile First 5 คอลัมน์) */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(5, minmax(0, 1fr));
             gap: 6px;
             padding: 15px 10px;
             width: 100%;
-            max-width: 600px; /* ความกว้างสูงสุดสำหรับมือถือ/แท็บเล็ต */
+            max-width: 600px;
             margin: 0 auto;
         }
 
@@ -136,17 +135,16 @@
             width: 100%;
         }
 
-        /* ปุ่ม RESET ปรับขนาดให้เล็กลงและมินิมอลขึ้น */
         .btn-reset {
             background: #dc2626;
             color: white;
             border: none;
-            padding: 8px 20px; /* ลด Padding */
+            padding: 8px 20px;
             border-radius: 6px;
             font-family: 'Prompt', sans-serif;
-            font-size: 1rem; /* ลดขนาดฟอนต์ */
+            font-size: 1rem;
             font-weight: bold;
-            width: auto; /* ไม่บังคับกว้าง 100% */
+            width: auto;
             min-width: 120px;
             cursor: pointer;
             box-shadow: 0 3px 0 #991b1b;
@@ -157,30 +155,17 @@
             box-shadow: none;
         }
 
-        /* --------------------------------------------------------
-           Responsive สำหรับ Desktop (หน้าจอ 1024px ถึง 1920x1080)
-        ----------------------------------------------------------- */
         @media (min-width: 1024px) {
             .grid-container { 
-                grid-template-columns: repeat(10, minmax(0, 1fr)); /* เป็น 10 คอลัมน์ */
-                max-width: 1100px; /* ขยายความกว้างให้พอดีจอ 1920x1080 แบบไม่อึดอัด */
+                grid-template-columns: repeat(10, minmax(0, 1fr));
+                max-width: 1100px;
                 gap: 8px;
                 padding: 20px 10px;
             }
-            .box { 
-                /* ปรับกล่องให้เป็นสี่เหลี่ยมผืนผ้าแนวนอน ลดความสูงเพื่อไม่ให้จอ 1080p ต้องเลื่อนหน้าเว็บเยอะ */
-                aspect-ratio: 1.25 / 1; 
-            }
-            .num-text {
-                font-size: 1.6rem;
-            }
-            .box.taken .num-text {
-                font-size: 1.3rem;
-            }
-            .name {
-                font-size: 0.85rem;
-                padding: 3px 2px;
-            }
+            .box { aspect-ratio: 1.25 / 1; }
+            .num-text { font-size: 1.6rem; }
+            .box.taken .num-text { font-size: 1.3rem; }
+            .name { font-size: 0.85rem; padding: 3px 2px; }
         }
 
         /* Custom Modal UI */
@@ -251,7 +236,7 @@
 <body>
 
     <header>
-        <h1>ทายผล 2 ตัวล่าง: 16 มิ.ย. 69</h1>
+        <h1 id="draw-title">ทายผล 2 ตัวล่าง</h1>
         <div class="timer-bar" id="timer">นับถอยหลัง: ...</div>
     </header>
 
@@ -294,8 +279,64 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        const drawID = "draw_16_06_2026";
-        const drawTime = new Date("June 16, 2026 15:30:00").getTime();
+        // -----------------------------------------------------------
+        // ฟังก์ชันคำนวณหาวันที่ 1 หรือ 16 เวลาเที่ยงวัน ถัดไปโดยอัตโนมัติ
+        // -----------------------------------------------------------
+        function getNextDrawInfo() {
+            const now = new Date();
+            let year = now.getFullYear();
+            let month = now.getMonth(); // 0 = ม.ค., 11 = ธ.ค.
+            let drawDay = 1;
+
+            // สร้างเวลาเปรียบเทียบของวันที่ 1 เที่ยงวันของเดือนนี้
+            let targetDate1 = new Date(year, month, 1, 12, 0, 0);
+            // สร้างเวลาเปรียบเทียบของวันที่ 16 เที่ยงวันของเดือนนี้
+            let targetDate16 = new Date(year, month, 16, 12, 0, 0);
+
+            let nextDrawDate;
+
+            if (now < targetDate1) {
+                // ยังไม่ถึงวันที่ 1 เที่ยงวันของเดือนนี้
+                nextDrawDate = targetDate1;
+                drawDay = 1;
+            } else if (now < targetDate16) {
+                // ผ่านวันที่ 1 เที่ยงวันมาแล้ว แต่ยังไม่ถึงวันที่ 16 เที่ยงวัน
+                nextDrawDate = targetDate16;
+                drawDay = 16;
+            } else {
+                // ผ่านวันที่ 16 เที่ยงวันของเดือนนี้มาแล้ว -> เป้าหมายคือวันที่ 1 เที่ยงวันของเดือนหน้า
+                month++;
+                if (month > 11) {
+                    month = 0;
+                    year++;
+                }
+                nextDrawDate = new Date(year, month, 1, 12, 0, 0);
+                drawDay = 1;
+            }
+
+            // แปลงชื่อเดือนเป็นภาษาไทยสำหรับแสดงผลบนหัวข้อ
+            const thMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+            const thYear = nextDrawDate.getFullYear() + 543;
+            const drawTitleText = `ทายผล 2 ตัวล่าง งวดวันที่ ${drawDay} ${thMonths[nextDrawDate.getMonth()]} ${thYear.toString().substring(2)}`;
+            
+            // สร้าง ID ประจำงวดอัตโนมัติ (เช่น draw_1_5_2569)
+            const drawIDText = `draw_${drawDay}_${nextDrawDate.getMonth() + 1}_${thYear}`;
+
+            return {
+                timestamp: nextDrawDate.getTime(),
+                title: drawTitleText,
+                id: drawIDText
+            };
+        }
+
+        const drawInfo = getNextDrawInfo();
+        const drawID = drawInfo.id;
+        const drawTime = drawInfo.timestamp;
+
+        // แสดงหัวงวดอัตโนมัติ
+        document.getElementById("draw_title").innerText = drawInfo.title;
+
+        // -----------------------------------------------------------
 
         function showModal(type, msg) {
             return new Promise((resolve) => {
@@ -314,40 +355,21 @@
                     inputEl.style.display = "none";
                     okBtn.style.display = "none";
                     cancelBtn.innerText = "ปิดหน้าต่าง";
-                    
-                    cancelBtn.onclick = () => {
-                        modal.style.display = "none";
-                        resolve(null);
-                    };
+                    cancelBtn.onclick = () => { modal.style.display = "none"; resolve(null); };
                 } else if (type === 'prompt') {
                     inputEl.style.display = "block";
                     inputEl.value = "";
                     okBtn.style.display = "inline-block";
                     cancelBtn.innerText = "ปิดหน้าต่าง";
-                    
                     setTimeout(() => inputEl.focus(), 100);
-
-                    okBtn.onclick = () => {
-                        modal.style.display = "none";
-                        resolve(inputEl.value);
-                    };
-                    cancelBtn.onclick = () => {
-                        modal.style.display = "none";
-                        resolve(null);
-                    };
+                    okBtn.onclick = () => { modal.style.display = "none"; resolve(inputEl.value); };
+                    cancelBtn.onclick = () => { modal.style.display = "none"; resolve(null); };
                 } else if (type === 'confirm') {
                     inputEl.style.display = "none";
                     okBtn.style.display = "inline-block";
                     cancelBtn.innerText = "ปิดหน้าต่าง";
-
-                    okBtn.onclick = () => {
-                        modal.style.display = "none";
-                        resolve(true);
-                    };
-                    cancelBtn.onclick = () => {
-                        modal.style.display = "none";
-                        resolve(false);
-                    };
+                    okBtn.onclick = () => { modal.style.display = "none"; resolve(true); };
+                    cancelBtn.onclick = () => { modal.style.display = "none"; resolve(false); };
                 }
             });
         }
@@ -363,9 +385,10 @@
         };
         checkMyChoice();
 
+        // นาฬิกานับถอยหลัง
         setInterval(() => {
             const diff = drawTime - Date.now();
-            if(diff < 0) { document.getElementById("timer").innerText = "ปิดรับแทงแล้ว"; return; }
+            if(diff < 0) { document.getElementById("timer").innerText = "ปิดรับทายผลแล้ว (หมดเวลา)"; return; }
             
             const d = Math.floor(diff / 86400000);
             const h = Math.floor((diff % 86400000) / 3600000);
@@ -385,7 +408,7 @@
             
             el.onclick = async () => {
                 if(Date.now() > drawTime) {
-                    await showModal('alert', "หมดเวลาทายผลแล้วครับ");
+                    await showModal('alert', "หมดเวลาทายผลของงวดนี้แล้วครับ");
                     return;
                 }
                 if(localStorage.getItem(drawID)) {
