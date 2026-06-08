@@ -285,26 +285,21 @@
         function getNextDrawInfo() {
             const now = new Date();
             let year = now.getFullYear();
-            let month = now.getMonth(); // 0 = ม.ค., 11 = ธ.ค.
+            let month = now.getMonth(); 
             let drawDay = 1;
 
-            // สร้างเวลาเปรียบเทียบของวันที่ 1 เที่ยงวันของเดือนนี้
             let targetDate1 = new Date(year, month, 1, 12, 0, 0);
-            // สร้างเวลาเปรียบเทียบของวันที่ 16 เที่ยงวันของเดือนนี้
             let targetDate16 = new Date(year, month, 16, 12, 0, 0);
 
             let nextDrawDate;
 
             if (now < targetDate1) {
-                // ยังไม่ถึงวันที่ 1 เที่ยงวันของเดือนนี้
                 nextDrawDate = targetDate1;
                 drawDay = 1;
             } else if (now < targetDate16) {
-                // ผ่านวันที่ 1 เที่ยงวันมาแล้ว แต่ยังไม่ถึงวันที่ 16 เที่ยงวัน
                 nextDrawDate = targetDate16;
                 drawDay = 16;
             } else {
-                // ผ่านวันที่ 16 เที่ยงวันของเดือนนี้มาแล้ว -> เป้าหมายคือวันที่ 1 เที่ยงวันของเดือนหน้า
                 month++;
                 if (month > 11) {
                     month = 0;
@@ -314,12 +309,10 @@
                 drawDay = 1;
             }
 
-            // แปลงชื่อเดือนเป็นภาษาไทยสำหรับแสดงผลบนหัวข้อ
             const thMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
             const thYear = nextDrawDate.getFullYear() + 543;
             const drawTitleText = `ทายผล 2 ตัวล่าง งวดวันที่ ${drawDay} ${thMonths[nextDrawDate.getMonth()]} ${thYear.toString().substring(2)}`;
             
-            // สร้าง ID ประจำงวดอัตโนมัติ (เช่น draw_1_5_2569)
             const drawIDText = `draw_${drawDay}_${nextDrawDate.getMonth() + 1}_${thYear}`;
 
             return {
@@ -333,8 +326,8 @@
         const drawID = drawInfo.id;
         const drawTime = drawInfo.timestamp;
 
-        // แสดงหัวงวดอัตโนมัติ
-        document.getElementById("draw_title").innerText = drawInfo.title;
+        // แก้ไขจุดนี้ให้ใช้ขีดกลางตรงกับ id ในหน้า HTML ครับ (เปลี่ยนจาก draw_title เป็น draw-title)
+        document.getElementById("draw-title").innerText = drawInfo.title;
 
         // -----------------------------------------------------------
 
@@ -385,7 +378,6 @@
         };
         checkMyChoice();
 
-        // นาฬิกานับถอยหลัง
         setInterval(() => {
             const diff = drawTime - Date.now();
             if(diff < 0) { document.getElementById("timer").innerText = "ปิดรับทายผลแล้ว (หมดเวลา)"; return; }
