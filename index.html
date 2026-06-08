@@ -99,7 +99,6 @@
             line-height: 1;
         }
 
-        /* เมื่อกล่องถูกจองแล้ว ปรับตามดีไซน์เหลี่ยมเต็มความกว้าง */
         .box.taken {
             background: var(--danger);
             box-shadow: 0 3px 0 #b91c1c;
@@ -113,7 +112,6 @@
             opacity: 0.95;
         }
 
-        /* ป้ายชื่อเหลี่ยมกว้าง 100% อ่านง่ายเด่นชัด */
         .name {
             font-size: clamp(0.7rem, 3.5vw, 0.95rem);
             font-weight: 700;
@@ -136,7 +134,6 @@
             width: 100%;
         }
 
-        /* เปลี่ยนดีไซน์ป้ายเป็นปุ่ม RESET ตัวใหญ่เด่นชัด */
         .btn-reset {
             background: #dc2626;
             color: white;
@@ -342,13 +339,19 @@
         };
         checkMyChoice();
 
+        // ---------------------------------------------------
+        // อัปเดตสูตรนับถอยหลังให้แปลงชั่วโมงเป็น "วัน" เรียบร้อยครับ
+        // ---------------------------------------------------
         setInterval(() => {
             const diff = drawTime - Date.now();
             if(diff < 0) { document.getElementById("timer").innerText = "ปิดรับแทงแล้ว"; return; }
-            const h = Math.floor(diff / 3600000);
+            
+            const d = Math.floor(diff / 86400000); // คำนวณวัน
+            const h = Math.floor((diff % 86400000) / 3600000); // คำนวณชั่วโมงที่เหลือจากวัน
             const m = Math.floor((diff % 3600000) / 60000);
             const s = Math.floor((diff % 60000) / 1000);
-            document.getElementById("timer").innerText = `เหลือเวลา: ${h}ชม. ${m}นาที ${s}วิ`;
+            
+            document.getElementById("timer").innerText = `เหลือเวลา: ${d}วัน ${h}ชม. ${m}นาที ${s}วิ`;
         }, 1000);
 
         const grid = document.getElementById("grid");
@@ -388,14 +391,9 @@
             grid.appendChild(el);
         }
 
-        // ---------------------------------------------------
-        // ปรับแต่งตัวดักจับ Realtime Sync (ให้ล้างค่าในเครื่องออโต้เมื่อแอดมินลบเบส)
-        // ---------------------------------------------------
         onValue(ref(db, 'reservations'), (snap) => {
             const data = snap.val() || {};
             
-            // หากในฐานข้อมูลว่างเปล่า (แอดมินกด RESET สำเร็จ)
-            // ให้ลบสิทธิ์ที่จำอยู่ในเครื่องผู้ใช้ทุกคนทิ้งทันที
             if (Object.keys(data).length === 0) {
                 localStorage.removeItem(drawID);
                 checkMyChoice();
