@@ -3,103 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ทายผลเลขท้าย 2 ตัวล่าง</title>
+    <title>ทายผลเลขท้าย 2 ตัวล่าง (Elderly Friendly)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --primary-color: #4CAF50;
-            --taken-color: #f44336;
-            --bg-color: #f5f5f5;
+            --primary-color: #2e7d32; /* เขียวเข้มอ่านง่าย */
+            --taken-color: #c62828;   /* แดงเข้มชัดเจน */
+            --bg-color: #f8fafc;
+            --text-main: #1e293b;
         }
+
+        * { box-sizing: border-box; }
+
         body {
-            font-family: 'Sarabun', Tahoma, sans-serif;
+            font-family: 'Sarabun', sans-serif;
             background-color: var(--bg-color);
             text-align: center;
             margin: 0;
             padding: 20px;
+            color: var(--text-main);
         }
+
+        header {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+
         h1 {
-            color: #333;
-            margin-bottom: 5px;
+            font-family: 'Prompt', sans-serif;
+            font-size: 2.2rem;
+            margin: 0 0 15px 0;
+            color: #0f172a;
         }
+
         .countdown-container {
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             color: #d32f2f;
             font-weight: bold;
-            margin-bottom: 20px;
-            padding: 10px;
-            background-color: #fff;
-            border-radius: 8px;
+            padding: 15px;
+            background-color: #ffebee;
+            border-radius: 12px;
             display: inline-block;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 2px solid #ffcdd2;
         }
+
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            gap: 10px;
-            max-width: 800px;
+            grid-template-columns: repeat(4, 1fr); /* 4 ช่องต่อแถวสำหรับมือถือ */
+            gap: 12px;
+            max-width: 900px;
             margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 10px;
         }
+
         .number-box {
             background-color: var(--primary-color);
             color: white;
-            padding: 15px 5px;
-            font-size: 1.2rem;
+            padding: 25px 5px;
+            font-size: 1.8rem; /* ตัวเลขใหญ่มาก */
             font-weight: bold;
-            border-radius: 5px;
+            border-radius: 15px;
             cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 4px 0 #1b5e20;
+            transition: all 0.1s;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 50px;
-            word-break: break-all;
+            min-height: 100px;
         }
-        .number-box:hover {
-            transform: scale(1.05);
-            background-color: #45a049;
+
+        .number-box:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 transparent;
         }
+
         .number-box.taken {
             background-color: var(--taken-color);
+            box-shadow: 0 4px 0 #b71c1c;
             cursor: not-allowed;
-            transform: none;
         }
-        .number-box.taken .name-label {
-            font-size: 0.7rem;
+
+        .name-label {
+            font-size: 1rem;
             font-weight: normal;
-            margin-top: 5px;
-            line-height: 1;
+            margin-top: 8px;
+            background: rgba(0,0,0,0.2);
+            padding: 2px 8px;
+            border-radius: 5px;
+            width: 90%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
-        
-        /* Responsive สำหรับมือถือ */
-        @media (max-width: 600px) {
+
+        /* ปุ่ม Admin Reset */
+        .admin-zone {
+            margin-top: 50px;
+            padding: 30px;
+            border-top: 2px dashed #cbd5e1;
+        }
+
+        .reset-btn {
+            background-color: #475569;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            font-family: 'Prompt', sans-serif;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #334155;
+        }
+
+        .reset-btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        /* Desktop View */
+        @media (min-width: 800px) {
             .grid-container {
-                grid-template-columns: repeat(5, 1fr);
+                grid-template-columns: repeat(10, 1fr);
             }
+            h1 { font-size: 3rem; }
         }
     </style>
 </head>
 <body>
 
-    <h1>เลขท้าย สองตัว ล่าง งวดวันที่ 16 มิถุนายน 2569</h1>
-    
-    <div class="countdown-container">
-        ปิดรับทายผลใน: <span id="timer">กำลังคำนวณ...</span>
-    </div>
+    <header>
+        <h1>เลขท้าย สองตัว ล่าง<br>งวดวันที่ 16 มิถุนายน 2569</h1>
+        <div class="countdown-container">
+            ปิดรับทายผลใน: <br><span id="timer">...</span>
+        </div>
+    </header>
 
     <div class="grid-container" id="grid">
         </div>
 
-    <script type="module">
-        // Import ฟังก์ชันที่จำเป็นจาก Firebase
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    <div class="admin-zone">
+        <button class="reset-btn" id="resetBtn">ล้างข้อมูลทั้งหมด (เริ่มงวดใหม่)</button>
+    </div>
 
-        // ตั้งค่า Firebase ตามที่คุณให้มา
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, onValue, set, get, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
         const firebaseConfig = {
             apiKey: "AIzaSyBvXRATBf2x1Lq_JToL2rlQYOh8mK65tIU",
             authDomain: "suchartstudio-9a78d.firebaseapp.com",
@@ -111,107 +167,81 @@
             measurementId: "G-T1SGHLYCS5"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // -----------------------------------------
-        // 1. ระบบนับถอยหลัง (ตั้งค่างวดที่จะออกตรงนี้)
-        // -----------------------------------------
+        // นัดหมายเวลา (ตัวอย่าง)
         const drawDate = new Date("June 16, 2026 15:30:00").getTime();
 
-        const timerInterval = setInterval(function() {
+        setInterval(() => {
             const now = new Date().getTime();
             const distance = drawDate - now;
-
             if (distance < 0) {
-                clearInterval(timerInterval);
-                document.getElementById("timer").innerHTML = "หมดเวลาทายผลแล้ว!";
+                document.getElementById("timer").innerHTML = "หมดเวลาแล้ว";
                 return;
             }
-
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            document.getElementById("timer").innerHTML = 
-                days + " วัน " + hours + " ชม. " + minutes + " นาที " + seconds + " วินาที ";
+            const d = Math.floor(distance / (86400000));
+            const h = Math.floor((distance % 86400000) / 3600000);
+            const m = Math.floor((distance % 3600000) / 60000);
+            const s = Math.floor((distance % 60000) / 1000);
+            document.getElementById("timer").innerHTML = `${d}วัน ${h}ชม. ${m}นาที ${s}วินาที`;
         }, 1000);
 
-        // -----------------------------------------
-        // 2. สร้างตาราง 00-99
-        // -----------------------------------------
+        // สร้างตาราง
         const grid = document.getElementById("grid");
         for (let i = 0; i < 100; i++) {
-            let num = i.toString().padStart(2, '0'); // ทำให้เป็นเลข 2 หลักเสมอ (00, 01, ... 99)
-            
+            let num = i.toString().padStart(2, '0');
             let box = document.createElement("div");
             box.className = "number-box";
             box.id = "box-" + num;
-            box.innerText = num;
+            box.innerHTML = `<span>${num}</span>`;
             
-            // เมื่อคลิกที่กล่อง
-            box.onclick = async function() {
-                // เช็คเวลาหมดหรือยัง
-                if(new Date().getTime() > drawDate) {
-                    alert("หมดเวลาทายผลแล้วครับ!");
-                    return;
-                }
+            box.onclick = async () => {
+                if(new Date().getTime() > drawDate) return alert("หมดเวลาแล้วจ้า!");
+                
+                const snap = await get(ref(db, 'reservations/' + num));
+                if (snap.exists()) return alert("เลขนี้มีคนจองแล้วครับ");
 
-                // ตรวจสอบสถานะล่าสุดจากฐานข้อมูลก่อนจอง
-                const snapshot = await get(ref(db, 'reservations/' + num));
-                if (snapshot.exists()) {
-                    alert("เสียใจด้วย! หมายเลข " + num + " มีคนจองไปแล้ว");
-                    return;
-                }
-
-                let playerName = prompt("กรุณากรอกชื่อของคุณเพื่อจองหมายเลข " + num + ":");
-                if (playerName && playerName.trim() !== "") {
-                    // บันทึกข้อมูลลง Firebase
-                    set(ref(db, 'reservations/' + num), playerName.trim())
-                    .then(() => {
-                        alert("จองหมายเลข " + num + " สำเร็จ!");
-                    })
-                    .catch((error) => {
-                        alert("เกิดข้อผิดพลาด: " + error.message);
-                    });
+                let name = prompt("กรุณาใส่ชื่อของคุณเพื่อจองเลข " + num + ":");
+                if (name && name.trim()) {
+                    set(ref(db, 'reservations/' + num), name.trim());
                 }
             };
             grid.appendChild(box);
         }
 
-        // -----------------------------------------
-        // 3. ดึงข้อมูลแบบ Realtime จาก Firebase
-        // -----------------------------------------
-        const reservationsRef = ref(db, 'reservations');
-        onValue(reservationsRef, (snapshot) => {
-            const data = snapshot.val();
-            
-            // รีเซ็ตทุกกล่องให้เป็นสถานะว่างก่อน
+        // ดึงข้อมูล Realtime
+        onValue(ref(db, 'reservations'), (snapshot) => {
+            const data = snapshot.val() || {};
             for(let i = 0; i < 100; i++) {
                 let num = i.toString().padStart(2, '0');
                 let box = document.getElementById("box-" + num);
-                if(box) {
+                if (data[num]) {
+                    box.className = "number-box taken";
+                    box.innerHTML = `${num}<div class="name-label">${data[num]}</div>`;
+                } else {
                     box.className = "number-box";
-                    box.innerHTML = num;
-                    // ฟื้นฟู onclick เผื่อเคยถูกปิดไป (จะโดนกรองด้วย logic ด้านบนอยู่ดี)
+                    box.innerHTML = `<span>${num}</span>`;
                 }
             }
-
-            // ถ้ามีข้อมูล อัปเดตกล่องที่มีคนจองแล้ว
-            if (data) {
-                Object.keys(data).forEach((key) => {
-                    let box = document.getElementById("box-" + key);
-                    if (box) {
-                        box.className = "number-box taken";
-                        box.innerHTML = `${key}<div class="name-label">${data[key]}</div>`;
-                        // ยกเลิก event onclick เพื่อไม่ให้คลิกซ้ำได้
-                        box.onclick = null; 
-                    }
-                });
-            }
         });
+
+        // ระบบ Reset
+        document.getElementById("resetBtn").onclick = () => {
+            const confirmReset = confirm("คุณแน่ใจหรือไม่ว่าต้องการล้างข้อมูลทั้งหมดเพื่อเริ่มงวดใหม่?");
+            if (confirmReset) {
+                const password = prompt("กรุณาใส่รหัสผ่านเพื่อยืนยันการล้างข้อมูล:");
+                if (password === "987654321") {
+                    remove(ref(db, 'reservations'))
+                    .then(() => alert("ล้างข้อมูลเรียบร้อยแล้ว! ทุกช่องพร้อมให้จองใหม่"))
+                    .catch(err => alert("เกิดข้อผิดพลาด: " + err.message));
+                } else if (password !== null) {
+                    alert("รหัสผ่านไม่ถูกต้อง! ไม่สามารถล้างข้อมูลได้");
+                }
+            }
+        };
     </script>
 </body>
 </html>
+
+การอัปเดตระบบ Admin และ Master PIN สำเร็จแล้วครับ! หวังว่าระบบนี้จะช่วยให้คุณจัดการการทายผลได้สะดวกและปลอดภัยยิ่งขึ้น หากต้องการปรับแต่งส่วนไหนเพิ่มเติม แจ้งได้ทันทีเลยนะครับ!
