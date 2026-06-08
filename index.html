@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ทายผลเลขท้าย 2 ตัวล่าง</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --taken-color: #f44336;
+            --bg-color: #f5f5f5;
+        }
+        body {
+            font-family: 'Sarabun', Tahoma, sans-serif;
+            background-color: var(--bg-color);
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .countdown-container {
+            font-size: 1.2rem;
+            color: #d32f2f;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            display: inline-block;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 10px;
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .number-box {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 5px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 50px;
+            word-break: break-all;
+        }
+        .number-box:hover {
+            transform: scale(1.05);
+            background-color: #45a049;
+        }
+        .number-box.taken {
+            background-color: var(--taken-color);
+            cursor: not-allowed;
+            transform: none;
+        }
+        .number-box.taken .name-label {
+            font-size: 0.7rem;
+            font-weight: normal;
+            margin-top: 5px;
+            line-height: 1;
+        }
+        
+        /* Responsive สำหรับมือถือ */
+        @media (max-width: 600px) {
+            .grid-container {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>เลขท้าย สองตัว ล่าง งวดวันที่ 16 มิถุนายน 2569</h1>
+    
+    <div class="countdown-container">
+        ปิดรับทายผลใน: <span id="timer">กำลังคำนวณ...</span>
+    </div>
+
+    <div class="grid-container" id="grid">
+        </div>
+
+    <script type="module">
+        // Import ฟังก์ชันที่จำเป็นจาก Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        // ตั้งค่า Firebase ตามที่คุณให้มา
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvXRATBf2x1Lq_JToL2rlQYOh8mK65tIU",
+            authDomain: "suchartstudio-9a78d.firebaseapp.com",
+            databaseURL: "https://suchartstudio-9a78d-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "suchartstudio-9a78d",
+            storageBucket: "suchartstudio-9a78d.firebasestorage.app",
+            messagingSenderId: "953369646185",
+            appId: "1:953369646185:web:121f9e5920e3df006ebef8",
+            measurementId: "G-T1SGHLYCS5"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // -----------------------------------------
+        // 1. ระบบนับถอยหลัง (ตั้งค่างวดที่จะออกตรงนี้)
+        // -----------------------------------------
+        const drawDate = new Date("June 16, 2026 15:30:00").getTime();
+
+        const timerInterval = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = drawDate - now;
+
+            if (distance < 0) {
+                clearInterval(timerInterval);
+                document.getElementById("timer").innerHTML = "หมดเวลาทายผลแล้ว!";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("timer").innerHTML = 
+                days + " วัน " + hours + " ชม. " + minutes + " นาที " + seconds + " วินาที ";
+        }, 1000);
+
+        // -----------------------------------------
+        // 2. สร้างตาราง 00-99
+        // -----------------------------------------
+        const grid = document.getElementById("grid");
+        for (let i = 0; i < 100; i++) {
+            let num = i.toString().padStart(2, '0'); // ทำให้เป็นเลข 2 หลักเสมอ (00, 01, ... 99)
+            
+            let box = document.createElement("div");
+            box.className = "number-box";
+            box.id = "box-" + num;
+            box.innerText = num;
+            
+            // เมื่อคลิกที่กล่อง
+            box.onclick = async function() {
+                // เช็คเวลาหมดหรือยัง
+                if(new Date().getTime() > drawDate) {
+                    alert("หมดเวลาทายผลแล้วครับ!");
+                    return;
+                }
+
+                // ตรวจสอบสถานะล่าสุดจากฐานข้อมูลก่อนจอง
+                const snapshot = await get(ref(db, 'reservations/' + num));
+                if (snapshot.exists()) {
+                    alert("เสียใจด้วย! หมายเลข " + num + " มีคนจองไปแล้ว");
+                    return;
+                }
+
+                let playerName = prompt("กรุณากรอกชื่อของคุณเพื่อจองหมายเลข " + num + ":");
+                if (playerName && playerName.trim() !== "") {
+                    // บันทึกข้อมูลลง Firebase
+                    set(ref(db, 'reservations/' + num), playerName.trim())
+                    .then(() => {
+                        alert("จองหมายเลข " + num + " สำเร็จ!");
+                    })
+                    .catch((error) => {
+                        alert("เกิดข้อผิดพลาด: " + error.message);
+                    });
+                }
+            };
+            grid.appendChild(box);
+        }
+
+        // -----------------------------------------
+        // 3. ดึงข้อมูลแบบ Realtime จาก Firebase
+        // -----------------------------------------
+        const reservationsRef = ref(db, 'reservations');
+        onValue(reservationsRef, (snapshot) => {
+            const data = snapshot.val();
+            
+            // รีเซ็ตทุกกล่องให้เป็นสถานะว่างก่อน
+            for(let i = 0; i < 100; i++) {
+                let num = i.toString().padStart(2, '0');
+                let box = document.getElementById("box-" + num);
+                if(box) {
+                    box.className = "number-box";
+                    box.innerHTML = num;
+                    // ฟื้นฟู onclick เผื่อเคยถูกปิดไป (จะโดนกรองด้วย logic ด้านบนอยู่ดี)
+                }
+            }
+
+            // ถ้ามีข้อมูล อัปเดตกล่องที่มีคนจองแล้ว
+            if (data) {
+                Object.keys(data).forEach((key) => {
+                    let box = document.getElementById("box-" + key);
+                    if (box) {
+                        box.className = "number-box taken";
+                        box.innerHTML = `${key}<div class="name-label">${data[key]}</div>`;
+                        // ยกเลิก event onclick เพื่อไม่ให้คลิกซ้ำได้
+                        box.onclick = null; 
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
