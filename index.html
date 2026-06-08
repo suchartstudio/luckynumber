@@ -279,6 +279,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        let drawID = "";
+        let drawTime = 0;
+
         // -----------------------------------------------------------
         // ฟังก์ชันคำนวณหาวันที่ 1 หรือ 16 เวลาเที่ยงวัน ถัดไปโดยอัตโนมัติ
         // -----------------------------------------------------------
@@ -312,7 +315,6 @@
             const thMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
             const thYear = nextDrawDate.getFullYear() + 543;
             const drawTitleText = `ทายผล 2 ตัวล่าง งวดวันที่ ${drawDay} ${thMonths[nextDrawDate.getMonth()]} ${thYear.toString().substring(2)}`;
-            
             const drawIDText = `draw_${drawDay}_${nextDrawDate.getMonth() + 1}_${thYear}`;
 
             return {
@@ -322,12 +324,20 @@
             };
         }
 
-        const drawInfo = getNextDrawInfo();
-        const drawID = drawInfo.id;
-        const drawTime = drawInfo.timestamp;
-
-        // แก้ไขจุดนี้ให้ใช้ขีดกลางตรงกับ id ในหน้า HTML ครับ (เปลี่ยนจาก draw_title เป็น draw-title)
-        document.getElementById("draw-title").innerText = drawInfo.title;
+        // ดึงข้อมูล Context ประจำงวดจากส่วนกลาง Firebase
+        onValue(ref(db, 'current_draw'), (snap) => {
+            let drawInfo = snap.val();
+            if (!drawInfo) {
+                drawInfo = getNextDrawInfo();
+                set(ref(db, 'current_draw'), drawInfo);
+            }
+            
+            drawID = drawInfo.id;
+            drawTime = drawInfo.timestamp;
+            
+            document.getElementById("draw-title").innerText = drawInfo.title;
+            checkMyChoice();
+        });
 
         // -----------------------------------------------------------
 
@@ -368,6 +378,7 @@
         }
 
         const checkMyChoice = () => {
+            if (!drawID) return;
             const saved = localStorage.getItem(drawID);
             if(saved) {
                 document.getElementById("my-status").style.display = "block";
@@ -376,11 +387,15 @@
                 document.getElementById("my-status").style.display = "none";
             }
         };
-        checkMyChoice();
 
+        // นาฬิกานับถอยหลัง
         setInterval(() => {
+            if (!drawTime) return;
             const diff = drawTime - Date.now();
-            if(diff < 0) { document.getElementById("timer").innerText = "ปิดรับทายผลแล้ว (หมดเวลา)"; return; }
+            if(diff < 0) { 
+                document.getElementById("timer").innerText = "ปิดรับทายผลแล้ว (ระบบล็อกอยู่ รอแอดมิน RESET)"; 
+                return; 
+            }
             
             const d = Math.floor(diff / 86400000);
             const h = Math.floor((diff % 86400000) / 3600000);
@@ -399,8 +414,10 @@
             el.innerHTML = `<div class="num-text">${num}</div>`;
             
             el.onclick = async () => {
+                if (!drawTime) return;
+                // ตรวจสอบระบบล็อกหลังเวลาเที่ยงวันประจำงวด
                 if(Date.now() > drawTime) {
-                    await showModal('alert', "หมดเวลาทายผลของงวดนี้แล้วครับ");
+                    await showModal('alert', "หมดเวลาทายผลของงวดนี้แล้วครับ\nระบบถูกล็อกอยู่ จนกว่าแอดมินจะกดปุ่ม RESET");
                     return;
                 }
                 if(localStorage.getItem(drawID)) {
@@ -430,7 +447,7 @@
         onValue(ref(db, 'reservations'), (snap) => {
             const data = snap.val() || {};
             
-            if (Object.keys(data).length === 0) {
+            if (Object.keys(data).length === 0 && drawID) {
                 localStorage.removeItem(drawID);
                 checkMyChoice();
             }
@@ -448,6 +465,7 @@
             }
         });
 
+        // ปุ่ม RESET ปลดล็อกและคำนวณงวดใหม่ถัดไปในระบบทันที
         document.getElementById("resetBtn").onclick = async () => {
             const isConfirm = await showModal('confirm', "คุณต้องการล้างข้อมูลทั้งหมดเพื่อเริ่มงวดใหม่ใช่หรือไม่?");
             
@@ -455,9 +473,13 @@
                 const password = await showModal('prompt', "กรุณาใส่รหัสผ่าน Admin:");
                 
                 if(password === "987654321") {
-                    remove(ref(db, 'reservations')).then(async () => {
-                        await showModal('alert', "ล้างข้อมูลในฐานข้อมูลเรียบร้อยแล้ว!");
-                    });
+                    await remove(ref(db, 'reservations'));
+                    
+                    // คำนวณขยับไปงวดถัดไป และปลดล็อกระบบโดยอัตโนมัติ
+                    const nextDrawInfo = getNextDrawInfo();
+                    await set(ref(db, 'current_draw'), nextDrawInfo);
+                    
+                    await showModal('alert', "RESET ระบบสำเร็จ! ปลดล็อกตารางและเปิดงวดถัดไปเรียบร้อยแล้ว");
                 } else if(password !== null) {
                     await showModal('alert', "รหัสผ่านไม่ถูกต้อง!");
                 }
