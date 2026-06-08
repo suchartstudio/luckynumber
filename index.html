@@ -2,155 +2,152 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ทายผลเลขท้าย 2 ตัวล่าง (Elderly Friendly)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ทายผลเลขท้าย 2 ตัวล่าง</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;700&family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary-color: #2e7d32; /* เขียวเข้มอ่านง่าย */
-            --taken-color: #c62828;   /* แดงเข้มชัดเจน */
-            --bg-color: #f8fafc;
-            --text-main: #1e293b;
+            --primary: #10b981;
+            --danger: #ef4444;
+            --bg: #f1f5f9;
+            --card: #ffffff;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: 'Sarabun', sans-serif;
-            background-color: var(--bg-color);
-            text-align: center;
+            background-color: var(--bg);
             margin: 0;
-            padding: 20px;
-            color: var(--text-main);
+            padding: 0;
+            color: #1e293b;
         }
 
+        /* Compact Header */
         header {
-            background-color: #ffffff;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            margin-bottom: 30px;
+            background: #1e293b;
+            color: white;
+            padding: 15px 10px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
         }
 
-        h1 {
+        header h1 {
             font-family: 'Prompt', sans-serif;
-            font-size: 2.2rem;
-            margin: 0 0 15px 0;
-            color: #0f172a;
+            font-size: 1.3rem;
+            margin: 0 0 5px 0;
         }
 
-        .countdown-container {
-            font-size: 1.5rem;
-            color: #d32f2f;
+        .timer-bar {
+            font-size: 1rem;
+            color: #fbbf24;
             font-weight: bold;
-            padding: 15px;
-            background-color: #ffebee;
-            border-radius: 12px;
-            display: inline-block;
-            border: 2px solid #ffcdd2;
         }
 
+        /* Personal Status Bar (Floating) */
+        #my-status {
+            display: none;
+            background: #dcfce7;
+            color: #166534;
+            padding: 12px;
+            font-weight: bold;
+            font-family: 'Prompt', sans-serif;
+            border-bottom: 2px solid #86efac;
+            text-align: center;
+        }
+
+        /* Grid System: 5 Columns for Vertical Mobile */
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(4, 1fr); /* 4 ช่องต่อแถวสำหรับมือถือ */
-            gap: 12px;
-            max-width: 900px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            padding: 15px 10px;
+            max-width: 600px;
             margin: 0 auto;
-            padding: 10px;
         }
 
-        .number-box {
-            background-color: var(--primary-color);
+        .box {
+            background: var(--primary);
             color: white;
-            padding: 25px 5px;
-            font-size: 1.8rem; /* ตัวเลขใหญ่มาก */
-            font-weight: bold;
-            border-radius: 15px;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #1b5e20;
-            transition: all 0.1s;
+            aspect-ratio: 1 / 1.1;
+            border-radius: 12px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 100px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 3px 0 #059669;
+            cursor: pointer;
+            transition: transform 0.1s;
         }
 
-        .number-box:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 transparent;
+        .box:active { transform: scale(0.95); box-shadow: none; }
+
+        .box.taken {
+            background: var(--danger);
+            box-shadow: 0 3px 0 #dc2626;
+            font-size: 1.2rem;
         }
 
-        .number-box.taken {
-            background-color: var(--taken-color);
-            box-shadow: 0 4px 0 #b71c1c;
-            cursor: not-allowed;
-        }
-
-        .name-label {
-            font-size: 1rem;
+        .name {
+            font-size: 0.65rem;
             font-weight: normal;
-            margin-top: 8px;
-            background: rgba(0,0,0,0.2);
-            padding: 2px 8px;
-            border-radius: 5px;
-            width: 90%;
+            margin-top: 4px;
+            max-width: 90%;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            background: rgba(0,0,0,0.2);
+            padding: 1px 4px;
+            border-radius: 4px;
         }
 
-        /* ปุ่ม Admin Reset */
-        .admin-zone {
-            margin-top: 50px;
-            padding: 30px;
-            border-top: 2px dashed #cbd5e1;
+        /* Admin Section */
+        footer {
+            padding: 30px 15px 50px;
+            text-align: center;
         }
 
-        .reset-btn {
-            background-color: #475569;
+        .btn-reset {
+            background: #64748b;
             color: white;
             border: none;
-            padding: 20px 40px;
-            font-size: 1.5rem;
+            padding: 12px 25px;
+            border-radius: 10px;
             font-family: 'Prompt', sans-serif;
-            border-radius: 15px;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #334155;
+            font-size: 1rem;
         }
 
-        .reset-btn:active {
-            transform: translateY(4px);
-            box-shadow: none;
-        }
-
-        /* Desktop View */
-        @media (min-width: 800px) {
-            .grid-container {
-                grid-template-columns: repeat(10, 1fr);
-            }
-            h1 { font-size: 3rem; }
+        /* Responsive adjustments for Tablet/Desktop */
+        @media (min-width: 600px) {
+            .grid-container { grid-template-columns: repeat(10, 1fr); }
+            header h1 { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>เลขท้าย สองตัว ล่าง<br>งวดวันที่ 16 มิถุนายน 2569</h1>
-        <div class="countdown-container">
-            ปิดรับทายผลใน: <br><span id="timer">...</span>
-        </div>
+        <h1>ทายผล 2 ตัวล่าง: 16 มิ.ย. 69</h1>
+        <div class="timer-bar" id="timer">นับถอยหลัง: ...</div>
     </header>
 
-    <div class="grid-container" id="grid">
-        </div>
-
-    <div class="admin-zone">
-        <button class="reset-btn" id="resetBtn">ล้างข้อมูลทั้งหมด (เริ่มงวดใหม่)</button>
+    <div id="my-status">
+        คุณเลือกหมายเลข: <span id="my-num" style="color: #ef4444; font-size: 1.5rem;">--</span>
     </div>
+
+    <div class="grid-container" id="grid"></div>
+
+    <footer>
+        <button class="btn-reset" id="resetBtn">จัดการงวดถัดไป (Admin)</button>
+    </footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
@@ -170,76 +167,81 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // นัดหมายเวลา (ตัวอย่าง)
-        const drawDate = new Date("June 16, 2026 15:30:00").getTime();
+        const drawID = "draw_16_06_2026";
+        const drawTime = new Date("June 16, 2026 15:30:00").getTime();
 
-        setInterval(() => {
-            const now = new Date().getTime();
-            const distance = drawDate - now;
-            if (distance < 0) {
-                document.getElementById("timer").innerHTML = "หมดเวลาแล้ว";
-                return;
+        // Check local storage for existing choice
+        const checkMyChoice = () => {
+            const saved = localStorage.getItem(drawID);
+            if(saved) {
+                document.getElementById("my-status").style.display = "block";
+                document.getElementById("my-num").innerText = saved;
+            } else {
+                document.getElementById("my-status").style.display = "none";
             }
-            const d = Math.floor(distance / (86400000));
-            const h = Math.floor((distance % 86400000) / 3600000);
-            const m = Math.floor((distance % 3600000) / 60000);
-            const s = Math.floor((distance % 60000) / 1000);
-            document.getElementById("timer").innerHTML = `${d}วัน ${h}ชม. ${m}นาที ${s}วินาที`;
+        };
+        checkMyChoice();
+
+        // Timer Logic
+        setInterval(() => {
+            const diff = drawTime - Date.now();
+            if(diff < 0) { document.getElementById("timer").innerText = "ปิดรับแทงแล้ว"; return; }
+            const h = Math.floor(diff / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            document.getElementById("timer").innerText = `เหลือเวลา: ${h}ชม. ${m}นาที ${s}วิ`;
         }, 1000);
 
-        // สร้างตาราง
+        // Build Grid
         const grid = document.getElementById("grid");
-        for (let i = 0; i < 100; i++) {
-            let num = i.toString().padStart(2, '0');
-            let box = document.createElement("div");
-            box.className = "number-box";
-            box.id = "box-" + num;
-            box.innerHTML = `<span>${num}</span>`;
-            
-            box.onclick = async () => {
-                if(new Date().getTime() > drawDate) return alert("หมดเวลาแล้วจ้า!");
+        for(let i=0; i<100; i++) {
+            const num = i.toString().padStart(2, '0');
+            const el = document.createElement("div");
+            el.className = "box";
+            el.id = "n-" + num;
+            el.innerText = num;
+            el.onclick = async () => {
+                if(Date.now() > drawTime) return alert("หมดเวลาแล้ว");
+                if(localStorage.getItem(drawID)) return alert("คุณใช้สิทธิ์ไปแล้วที่หมายเลข " + localStorage.getItem(drawID));
                 
-                const snap = await get(ref(db, 'reservations/' + num));
-                if (snap.exists()) return alert("เลขนี้มีคนจองแล้วครับ");
+                const snap = await get(ref(db, 'reservations/'+num));
+                if(snap.exists()) return alert("เลขนี้ไม่ว่างแล้ว");
 
-                let name = prompt("กรุณาใส่ชื่อของคุณเพื่อจองเลข " + num + ":");
-                if (name && name.trim()) {
-                    set(ref(db, 'reservations/' + num), name.trim());
+                const name = prompt(`จองเลข ${num}\nกรุณาใส่ชื่อของคุณ:`);
+                if(name && name.trim()) {
+                    set(ref(db, 'reservations/'+num), name.trim()).then(() => {
+                        localStorage.setItem(drawID, num);
+                        checkMyChoice();
+                    });
                 }
             };
-            grid.appendChild(box);
+            grid.appendChild(el);
         }
 
-        // ดึงข้อมูล Realtime
-        onValue(ref(db, 'reservations'), (snapshot) => {
-            const data = snapshot.val() || {};
-            for(let i = 0; i < 100; i++) {
-                let num = i.toString().padStart(2, '0');
-                let box = document.getElementById("box-" + num);
-                if (data[num]) {
-                    box.className = "number-box taken";
-                    box.innerHTML = `${num}<div class="name-label">${data[num]}</div>`;
+        // Realtime Sync
+        onValue(ref(db, 'reservations'), (snap) => {
+            const data = snap.val() || {};
+            for(let i=0; i<100; i++) {
+                const num = i.toString().padStart(2, '0');
+                const el = document.getElementById("n-" + num);
+                if(data[num]) {
+                    el.className = "box taken";
+                    el.innerHTML = `<div>${num}</div><div class="name">${data[num]}</div>`;
                 } else {
-                    box.className = "number-box";
-                    box.innerHTML = `<span>${num}</span>`;
+                    el.className = "box";
+                    el.innerText = num;
                 }
             }
         });
 
-        // ระบบ Reset
+        // Reset Logic
         document.getElementById("resetBtn").onclick = () => {
-            const confirmReset = confirm("คุณแน่ใจหรือไม่ว่าต้องการล้างข้อมูลทั้งหมดเพื่อเริ่มงวดใหม่?");
-            if (confirmReset) {
-                const password = prompt("กรุณาใส่รหัสผ่านเพื่อยืนยันการล้างข้อมูล:");
-                if (password === "987654321") {
-                    remove(ref(db, 'reservations'))
-                    .then(() => alert("ล้างข้อมูลเรียบร้อยแล้ว! ทุกช่องพร้อมให้จองใหม่"))
-                    .catch(err => alert("เกิดข้อผิดพลาด: " + err.message));
-                } else if (password !== null) {
-                    alert("รหัสผ่านไม่ถูกต้อง! ไม่สามารถล้างข้อมูลได้");
-                }
+            if(confirm("ล้างข้อมูลทั้งหมด?") && prompt("รหัสผ่าน Admin:") === "987654321") {
+                remove(ref(db, 'reservations')).then(() => alert("ล้างเรียบร้อย"));
             }
         };
     </script>
 </body>
 </html>
+
+การปรับปรุงครั้งนี้จะทำให้ระบบดูเป็นแอปพลิเคชันมือถือระดับมืออาชีพมากขึ้น เข้ากับสัดส่วนหน้าจอแนวตั้งได้อย่างไร้ที่ติครับ! ลองนำไปอัปเดตดูนะครับ หากต้องการปรับจุดไหนเพิ่มบอกได้เลยครับ
