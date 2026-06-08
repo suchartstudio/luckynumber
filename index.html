@@ -99,35 +99,34 @@
             line-height: 1;
         }
 
-        /* เมื่อกล่องถูกจองแล้ว ปรับ Layout ให้ดันชื่อลงไปติดขอบล่าง */
+        /* เมื่อกล่องถูกจองแล้ว ปรับตามดีไซน์เหลี่ยมเต็มความกว้าง */
         .box.taken {
             background: var(--danger);
             box-shadow: 0 3px 0 #b91c1c;
-            padding: 0; /* ลบ padding เดิมออก */
-            justify-content: flex-end; /* ดันทุกอย่างไปด้านล่าง */
+            padding: 0;
+            justify-content: flex-end;
         }
 
-        /* จัดตำแหน่งตัวเลขให้อยู่ตรงกลางของพื้นที่ที่เหลือด้านบน */
         .box.taken .num-text {
             font-size: clamp(1.1rem, 4.5vw, 1.4rem);
-            margin: auto; /* ให้อยู่กึ่งกลางพื้นที่ด้านบน */
+            margin: auto;
             opacity: 0.95;
         }
 
-        /* ดีไซน์ป้ายชื่อแบบใหม่ เหลี่ยม กว้าง 100% อ่านง่าย */
+        /* ป้ายชื่อเหลี่ยมกว้าง 100% อ่านง่ายเด่นชัด */
         .name {
             font-size: clamp(0.7rem, 3.5vw, 0.95rem);
             font-weight: 700;
-            color: #7f1d1d; /* สีแดงเข้มจัดเพื่อให้อ่านชัดเจน */
+            color: #7f1d1d;
             background: #ffffff;
-            width: 100%; /* ขยายเต็มความกว้างของกล่อง */
+            width: 100%;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
             padding: 4px 2px;
-            border-radius: 0; /* ตัดขอบโค้งออก เป็นทรงเหลี่ยม */
+            border-radius: 0;
             text-align: center;
-            border-top: 2px solid #b91c1c; /* เส้นขอบด้านบนแบ่งตัวเลขกับชื่อ */
+            border-top: 2px solid #b91c1c;
             box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
         }
 
@@ -137,17 +136,25 @@
             width: 100%;
         }
 
+        /* เปลี่ยนดีไซน์ป้ายเป็นปุ่ม RESET ตัวใหญ่เด่นชัด */
         .btn-reset {
-            background: #64748b;
+            background: #dc2626;
             color: white;
             border: none;
-            padding: 12px 20px;
+            padding: 15px 30px;
             border-radius: 10px;
             font-family: 'Prompt', sans-serif;
-            font-size: clamp(0.9rem, 3vw, 1rem);
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            font-weight: bold;
             width: 100%;
             max-width: 300px;
             cursor: pointer;
+            box-shadow: 0 4px 0 #991b1b;
+        }
+        
+        .btn-reset:active {
+            transform: translateY(4px);
+            box-shadow: none;
         }
 
         /* Custom Modal UI */
@@ -234,7 +241,7 @@
     <div class="grid-container" id="grid"></div>
 
     <footer>
-        <button class="btn-reset" id="resetBtn">รีเซ็ตข้อมูลเริ่มใหม่</button>
+        <button class="btn-reset" id="resetBtn">RESET</button>
     </footer>
 
     <div id="custom-modal" class="modal-overlay">
@@ -381,8 +388,19 @@
             grid.appendChild(el);
         }
 
+        // ---------------------------------------------------
+        // ปรับแต่งตัวดักจับ Realtime Sync (ให้ล้างค่าในเครื่องออโต้เมื่อแอดมินลบเบส)
+        // ---------------------------------------------------
         onValue(ref(db, 'reservations'), (snap) => {
             const data = snap.val() || {};
+            
+            // หากในฐานข้อมูลว่างเปล่า (แอดมินกด RESET สำเร็จ)
+            // ให้ลบสิทธิ์ที่จำอยู่ในเครื่องผู้ใช้ทุกคนทิ้งทันที
+            if (Object.keys(data).length === 0) {
+                localStorage.removeItem(drawID);
+                checkMyChoice();
+            }
+
             for(let i=0; i<100; i++) {
                 const num = i.toString().padStart(2, '0');
                 const el = document.getElementById("n-" + num);
