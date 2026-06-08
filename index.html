@@ -13,10 +13,8 @@
             --primary: #10b981;
             --danger: #ef4444;
             --bg: #f1f5f9;
-            --card: #ffffff;
         }
 
-        /* รีเซ็ตค่าพื้นฐาน ป้องกันการล้น */
         * { 
             box-sizing: border-box; 
             -webkit-tap-highlight-color: transparent; 
@@ -28,11 +26,10 @@
             font-family: 'Sarabun', sans-serif;
             background-color: var(--bg);
             color: #1e293b;
-            overflow-x: hidden; /* ป้องกันการเลื่อนซ้ายขวาเด็ดขาด */
+            overflow-x: hidden;
             width: 100vw;
         }
 
-        /* ส่วนหัว */
         header {
             background: #1e293b;
             color: white;
@@ -47,7 +44,7 @@
 
         header h1 {
             font-family: 'Prompt', sans-serif;
-            font-size: clamp(1.1rem, 4vw, 1.5rem); /* ขยายตามจอ */
+            font-size: clamp(1.1rem, 4vw, 1.5rem);
             margin-bottom: 5px;
         }
 
@@ -57,7 +54,6 @@
             font-weight: bold;
         }
 
-        /* แถบสถานะส่วนตัว */
         #my-status {
             display: none;
             background: #dcfce7;
@@ -70,15 +66,13 @@
             font-size: clamp(0.9rem, 3vw, 1.1rem);
         }
 
-        /* ตาราง 5 คอลัมน์แบบปรับขนาดได้ 100% */
         .grid-container {
             display: grid;
-            /* ใช้ minmax(0, 1fr) เพื่อป้องกันไม่ให้ Grid ไอเทมดันคอนเทนเนอร์ล้น */
             grid-template-columns: repeat(5, minmax(0, 1fr));
-            gap: 5px; /* ลดช่องว่างลงนิดหน่อย */
-            padding: 10px;
+            gap: 6px;
+            padding: 12px 10px;
             width: 100%;
-            max-width: 600px; /* ไม่ให้ใหญ่เกินไปบนจอคอม */
+            max-width: 600px;
             margin: 0 auto;
         }
 
@@ -91,36 +85,51 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-size: clamp(1.2rem, 5vw, 1.8rem); /* ขนาดตัวเลขยืดหยุ่น */
             font-weight: bold;
             box-shadow: 0 3px 0 #059669;
             cursor: pointer;
             transition: transform 0.1s;
-            overflow: hidden; /* ตัดส่วนที่ล้นกล่องทิ้ง */
+            overflow: hidden;
         }
 
         .box:active { transform: scale(0.95); box-shadow: none; }
 
-        .box.taken {
-            background: var(--danger);
-            box-shadow: 0 3px 0 #dc2626;
+        .num-text {
+            font-size: clamp(1.2rem, 5vw, 1.8rem);
+            line-height: 1;
         }
 
+        /* เมื่อกล่องถูกจองแล้ว */
+        .box.taken {
+            background: var(--danger);
+            box-shadow: 0 3px 0 #b91c1c;
+            padding: 5px 0;
+            justify-content: space-evenly;
+        }
+
+        /* ย่อตัวเลขลงนิดนึงเพื่อให้ป้ายชื่อเด่น */
+        .box.taken .num-text {
+            font-size: clamp(0.9rem, 4vw, 1.2rem);
+            opacity: 0.95;
+        }
+
+        /* ดีไซน์ป้ายชื่อแบบใหม่ ลอยเด่นอ่านง่าย */
         .name {
-            font-size: clamp(0.55rem, 2.5vw, 0.75rem); /* ขนาดชื่อยืดหยุ่น */
-            font-weight: normal;
-            margin-top: 4px;
-            width: 90%;
+            font-size: clamp(0.65rem, 3.2vw, 0.9rem);
+            font-weight: 700; /* ตัวหนา */
+            color: #991b1b; /* ตัวหนังสือสีแดงเข้ม */
+            background: #ffffff; /* พื้นหลังสีขาวทึบ */
+            width: 92%;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            background: rgba(0,0,0,0.2);
-            padding: 2px 0;
-            border-radius: 4px;
+            padding: 3px 5px;
+            border-radius: 20px; /* ทรงแคปซูล */
             text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* ใส่เงาให้ดูลอยขึ้นมา */
+            border: 1px solid #fecaca;
         }
 
-        /* ส่วนแอดมิน */
         footer {
             padding: 30px 10px 50px;
             text-align: center;
@@ -139,6 +148,70 @@
             max-width: 300px;
             cursor: pointer;
         }
+
+        /* Custom Modal UI */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-box {
+            background: white;
+            padding: 25px 20px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: popIn 0.2s ease-out;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-msg {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-family: 'Prompt', sans-serif;
+            color: #1e293b;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            font-family: 'Sarabun', sans-serif;
+            text-align: center;
+        }
+        
+        .modal-input:focus { outline: none; border-color: #10b981; }
+
+        .modal-buttons { display: flex; gap: 10px; justify-content: center; }
+
+        .modal-btn {
+            padding: 12px 10px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Prompt', sans-serif;
+            flex: 1;
+            font-weight: bold;
+        }
+
+        .btn-ok { background: #10b981; color: white; }
+        .btn-cancel { background: #ef4444; color: white; }
 
         @media (min-width: 600px) {
             .grid-container { grid-template-columns: repeat(10, minmax(0, 1fr)); }
@@ -160,8 +233,19 @@
     <div class="grid-container" id="grid"></div>
 
     <footer>
-        <button class="btn-reset" id="resetBtn">จัดการงวดถัดไป (Admin)</button>
+        <button class="btn-reset" id="resetBtn">รีเซ็ตข้อมูลเริ่มใหม่</button>
     </footer>
+
+    <div id="custom-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div id="modal-msg" class="modal-msg">ข้อความ</div>
+            <input type="text" id="modal-input" class="modal-input" autocomplete="off">
+            <div class="modal-buttons">
+                <button id="modal-ok" class="modal-btn btn-ok">ตกลง</button>
+                <button id="modal-cancel" class="modal-btn btn-cancel">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
@@ -183,6 +267,61 @@
 
         const drawID = "draw_16_06_2026";
         const drawTime = new Date("June 16, 2026 15:30:00").getTime();
+
+        function showModal(type, msg) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById("custom-modal");
+                const msgEl = document.getElementById("modal-msg");
+                const inputEl = document.getElementById("modal-input");
+                const okBtn = document.getElementById("modal-ok");
+                const cancelBtn = document.getElementById("modal-cancel");
+
+                inputEl.onkeyup = (e) => { if(e.key === 'Enter') okBtn.click(); };
+
+                msgEl.innerHTML = msg.replace(/\n/g, '<br>');
+                modal.style.display = "flex";
+
+                if (type === 'alert') {
+                    inputEl.style.display = "none";
+                    okBtn.style.display = "none";
+                    cancelBtn.innerText = "ปิดหน้าต่าง";
+                    
+                    cancelBtn.onclick = () => {
+                        modal.style.display = "none";
+                        resolve(null);
+                    };
+                } else if (type === 'prompt') {
+                    inputEl.style.display = "block";
+                    inputEl.value = "";
+                    okBtn.style.display = "inline-block";
+                    cancelBtn.innerText = "ปิดหน้าต่าง";
+                    
+                    setTimeout(() => inputEl.focus(), 100);
+
+                    okBtn.onclick = () => {
+                        modal.style.display = "none";
+                        resolve(inputEl.value);
+                    };
+                    cancelBtn.onclick = () => {
+                        modal.style.display = "none";
+                        resolve(null);
+                    };
+                } else if (type === 'confirm') {
+                    inputEl.style.display = "none";
+                    okBtn.style.display = "inline-block";
+                    cancelBtn.innerText = "ปิดหน้าต่าง";
+
+                    okBtn.onclick = () => {
+                        modal.style.display = "none";
+                        resolve(true);
+                    };
+                    cancelBtn.onclick = () => {
+                        modal.style.display = "none";
+                        resolve(false);
+                    };
+                }
+            });
+        }
 
         const checkMyChoice = () => {
             const saved = localStorage.getItem(drawID);
@@ -210,19 +349,31 @@
             const el = document.createElement("div");
             el.className = "box";
             el.id = "n-" + num;
-            el.innerHTML = `<div>${num}</div>`;
+            el.innerHTML = `<div class="num-text">${num}</div>`;
+            
             el.onclick = async () => {
-                if(Date.now() > drawTime) return alert("หมดเวลาแล้ว");
-                if(localStorage.getItem(drawID)) return alert("คุณใช้สิทธิ์ไปแล้วที่หมายเลข " + localStorage.getItem(drawID));
+                if(Date.now() > drawTime) {
+                    await showModal('alert', "หมดเวลาทายผลแล้วครับ");
+                    return;
+                }
+                if(localStorage.getItem(drawID)) {
+                    await showModal('alert', "คุณใช้สิทธิ์ไปแล้วที่หมายเลข " + localStorage.getItem(drawID));
+                    return;
+                }
                 
                 const snap = await get(ref(db, 'reservations/'+num));
-                if(snap.exists()) return alert("เลขนี้ไม่ว่างแล้ว");
+                if(snap.exists()) {
+                    await showModal('alert', "เสียใจด้วย หมายเลขนี้ไม่ว่างแล้วครับ");
+                    return;
+                }
 
-                const name = prompt(`จองเลข ${num}\nกรุณาใส่ชื่อของคุณ:`);
+                const name = await showModal('prompt', `จองเลข ${num}\nกรุณาใส่ชื่อของคุณ:`);
+                
                 if(name && name.trim()) {
-                    set(ref(db, 'reservations/'+num), name.trim()).then(() => {
+                    set(ref(db, 'reservations/'+num), name.trim()).then(async () => {
                         localStorage.setItem(drawID, num);
                         checkMyChoice();
+                        await showModal('alert', "บันทึกข้อมูลเรียบร้อย ขอให้โชคดีครับ!");
                     });
                 }
             };
@@ -236,17 +387,27 @@
                 const el = document.getElementById("n-" + num);
                 if(data[num]) {
                     el.className = "box taken";
-                    el.innerHTML = `<div>${num}</div><div class="name">${data[num]}</div>`;
+                    el.innerHTML = `<div class="num-text">${num}</div><div class="name">${data[num]}</div>`;
                 } else {
                     el.className = "box";
-                    el.innerHTML = `<div>${num}</div>`;
+                    el.innerHTML = `<div class="num-text">${num}</div>`;
                 }
             }
         });
 
-        document.getElementById("resetBtn").onclick = () => {
-            if(confirm("ล้างข้อมูลทั้งหมด?") && prompt("รหัสผ่าน Admin:") === "987654321") {
-                remove(ref(db, 'reservations')).then(() => alert("ล้างเรียบร้อย"));
+        document.getElementById("resetBtn").onclick = async () => {
+            const isConfirm = await showModal('confirm', "คุณต้องการล้างข้อมูลทั้งหมดเพื่อเริ่มงวดใหม่ใช่หรือไม่?");
+            
+            if(isConfirm) {
+                const password = await showModal('prompt', "กรุณาใส่รหัสผ่าน Admin:");
+                
+                if(password === "987654321") {
+                    remove(ref(db, 'reservations')).then(async () => {
+                        await showModal('alert', "ล้างข้อมูลในฐานข้อมูลเรียบร้อยแล้ว!");
+                    });
+                } else if(password !== null) {
+                    await showModal('alert', "รหัสผ่านไม่ถูกต้อง!");
+                }
             }
         };
     </script>
