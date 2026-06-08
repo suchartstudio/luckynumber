@@ -99,35 +99,36 @@
             line-height: 1;
         }
 
-        /* เมื่อกล่องถูกจองแล้ว */
+        /* เมื่อกล่องถูกจองแล้ว ปรับ Layout ให้ดันชื่อลงไปติดขอบล่าง */
         .box.taken {
             background: var(--danger);
             box-shadow: 0 3px 0 #b91c1c;
-            padding: 5px 0;
-            justify-content: space-evenly;
+            padding: 0; /* ลบ padding เดิมออก */
+            justify-content: flex-end; /* ดันทุกอย่างไปด้านล่าง */
         }
 
-        /* ย่อตัวเลขลงนิดนึงเพื่อให้ป้ายชื่อเด่น */
+        /* จัดตำแหน่งตัวเลขให้อยู่ตรงกลางของพื้นที่ที่เหลือด้านบน */
         .box.taken .num-text {
-            font-size: clamp(0.9rem, 4vw, 1.2rem);
+            font-size: clamp(1.1rem, 4.5vw, 1.4rem);
+            margin: auto; /* ให้อยู่กึ่งกลางพื้นที่ด้านบน */
             opacity: 0.95;
         }
 
-        /* ดีไซน์ป้ายชื่อแบบใหม่ ลอยเด่นอ่านง่าย */
+        /* ดีไซน์ป้ายชื่อแบบใหม่ เหลี่ยม กว้าง 100% อ่านง่าย */
         .name {
-            font-size: clamp(0.65rem, 3.2vw, 0.9rem);
-            font-weight: 700; /* ตัวหนา */
-            color: #991b1b; /* ตัวหนังสือสีแดงเข้ม */
-            background: #ffffff; /* พื้นหลังสีขาวทึบ */
-            width: 92%;
+            font-size: clamp(0.7rem, 3.5vw, 0.95rem);
+            font-weight: 700;
+            color: #7f1d1d; /* สีแดงเข้มจัดเพื่อให้อ่านชัดเจน */
+            background: #ffffff;
+            width: 100%; /* ขยายเต็มความกว้างของกล่อง */
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            padding: 3px 5px;
-            border-radius: 20px; /* ทรงแคปซูล */
+            padding: 4px 2px;
+            border-radius: 0; /* ตัดขอบโค้งออก เป็นทรงเหลี่ยม */
             text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* ใส่เงาให้ดูลอยขึ้นมา */
-            border: 1px solid #fecaca;
+            border-top: 2px solid #b91c1c; /* เส้นขอบด้านบนแบ่งตัวเลขกับชื่อ */
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
         }
 
         footer {
@@ -233,7 +234,7 @@
     <div class="grid-container" id="grid"></div>
 
     <footer>
-        <button class="btn-reset" id="resetBtn">รีเซ็ตข้อมูลเริ่มใหม่</button>
+        <button class="btn-reset" id="resetBtn">จัดการงวดถัดไป (Admin)</button>
     </footer>
 
     <div id="custom-modal" class="modal-overlay">
