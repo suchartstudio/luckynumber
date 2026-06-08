@@ -16,17 +16,23 @@
             --card: #ffffff;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        /* รีเซ็ตค่าพื้นฐาน ป้องกันการล้น */
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            margin: 0; 
+            padding: 0; 
+        }
 
         body {
             font-family: 'Sarabun', sans-serif;
             background-color: var(--bg);
-            margin: 0;
-            padding: 0;
             color: #1e293b;
+            overflow-x: hidden; /* ป้องกันการเลื่อนซ้ายขวาเด็ดขาด */
+            width: 100vw;
         }
 
-        /* Compact Header */
+        /* ส่วนหัว */
         header {
             background: #1e293b;
             color: white;
@@ -36,39 +42,43 @@
             z-index: 100;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             text-align: center;
+            width: 100%;
         }
 
         header h1 {
             font-family: 'Prompt', sans-serif;
-            font-size: 1.3rem;
-            margin: 0 0 5px 0;
+            font-size: clamp(1.1rem, 4vw, 1.5rem); /* ขยายตามจอ */
+            margin-bottom: 5px;
         }
 
         .timer-bar {
-            font-size: 1rem;
+            font-size: clamp(0.9rem, 3vw, 1rem);
             color: #fbbf24;
             font-weight: bold;
         }
 
-        /* Personal Status Bar (Floating) */
+        /* แถบสถานะส่วนตัว */
         #my-status {
             display: none;
             background: #dcfce7;
             color: #166534;
-            padding: 12px;
+            padding: 10px;
             font-weight: bold;
             font-family: 'Prompt', sans-serif;
             border-bottom: 2px solid #86efac;
             text-align: center;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
         }
 
-        /* Grid System: 5 Columns for Vertical Mobile */
+        /* ตาราง 5 คอลัมน์แบบปรับขนาดได้ 100% */
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            padding: 15px 10px;
-            max-width: 600px;
+            /* ใช้ minmax(0, 1fr) เพื่อป้องกันไม่ให้ Grid ไอเทมดันคอนเทนเนอร์ล้น */
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 5px; /* ลดช่องว่างลงนิดหน่อย */
+            padding: 10px;
+            width: 100%;
+            max-width: 600px; /* ไม่ให้ใหญ่เกินไปบนจอคอม */
             margin: 0 auto;
         }
 
@@ -76,16 +86,17 @@
             background: var(--primary);
             color: white;
             aspect-ratio: 1 / 1.1;
-            border-radius: 12px;
+            border-radius: 8px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-size: 1.5rem;
+            font-size: clamp(1.2rem, 5vw, 1.8rem); /* ขนาดตัวเลขยืดหยุ่น */
             font-weight: bold;
             box-shadow: 0 3px 0 #059669;
             cursor: pointer;
             transition: transform 0.1s;
+            overflow: hidden; /* ตัดส่วนที่ล้นกล่องทิ้ง */
         }
 
         .box:active { transform: scale(0.95); box-shadow: none; }
@@ -93,42 +104,45 @@
         .box.taken {
             background: var(--danger);
             box-shadow: 0 3px 0 #dc2626;
-            font-size: 1.2rem;
         }
 
         .name {
-            font-size: 0.65rem;
+            font-size: clamp(0.55rem, 2.5vw, 0.75rem); /* ขนาดชื่อยืดหยุ่น */
             font-weight: normal;
             margin-top: 4px;
-            max-width: 90%;
+            width: 90%;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
             background: rgba(0,0,0,0.2);
-            padding: 1px 4px;
+            padding: 2px 0;
             border-radius: 4px;
+            text-align: center;
         }
 
-        /* Admin Section */
+        /* ส่วนแอดมิน */
         footer {
-            padding: 30px 15px 50px;
+            padding: 30px 10px 50px;
             text-align: center;
+            width: 100%;
         }
 
         .btn-reset {
             background: #64748b;
             color: white;
             border: none;
-            padding: 12px 25px;
+            padding: 12px 20px;
             border-radius: 10px;
             font-family: 'Prompt', sans-serif;
-            font-size: 1rem;
+            font-size: clamp(0.9rem, 3vw, 1rem);
+            width: 100%;
+            max-width: 300px;
+            cursor: pointer;
         }
 
-        /* Responsive adjustments for Tablet/Desktop */
         @media (min-width: 600px) {
-            .grid-container { grid-template-columns: repeat(10, 1fr); }
-            header h1 { font-size: 2rem; }
+            .grid-container { grid-template-columns: repeat(10, minmax(0, 1fr)); }
+            .box { aspect-ratio: 1 / 1; }
         }
     </style>
 </head>
@@ -140,7 +154,7 @@
     </header>
 
     <div id="my-status">
-        คุณเลือกหมายเลข: <span id="my-num" style="color: #ef4444; font-size: 1.5rem;">--</span>
+        คุณเลือกหมายเลข: <span id="my-num" style="color: #ef4444; font-size: 1.2em;">--</span>
     </div>
 
     <div class="grid-container" id="grid"></div>
@@ -170,7 +184,6 @@
         const drawID = "draw_16_06_2026";
         const drawTime = new Date("June 16, 2026 15:30:00").getTime();
 
-        // Check local storage for existing choice
         const checkMyChoice = () => {
             const saved = localStorage.getItem(drawID);
             if(saved) {
@@ -182,7 +195,6 @@
         };
         checkMyChoice();
 
-        // Timer Logic
         setInterval(() => {
             const diff = drawTime - Date.now();
             if(diff < 0) { document.getElementById("timer").innerText = "ปิดรับแทงแล้ว"; return; }
@@ -192,14 +204,13 @@
             document.getElementById("timer").innerText = `เหลือเวลา: ${h}ชม. ${m}นาที ${s}วิ`;
         }, 1000);
 
-        // Build Grid
         const grid = document.getElementById("grid");
         for(let i=0; i<100; i++) {
             const num = i.toString().padStart(2, '0');
             const el = document.createElement("div");
             el.className = "box";
             el.id = "n-" + num;
-            el.innerText = num;
+            el.innerHTML = `<div>${num}</div>`;
             el.onclick = async () => {
                 if(Date.now() > drawTime) return alert("หมดเวลาแล้ว");
                 if(localStorage.getItem(drawID)) return alert("คุณใช้สิทธิ์ไปแล้วที่หมายเลข " + localStorage.getItem(drawID));
@@ -218,7 +229,6 @@
             grid.appendChild(el);
         }
 
-        // Realtime Sync
         onValue(ref(db, 'reservations'), (snap) => {
             const data = snap.val() || {};
             for(let i=0; i<100; i++) {
@@ -229,12 +239,11 @@
                     el.innerHTML = `<div>${num}</div><div class="name">${data[num]}</div>`;
                 } else {
                     el.className = "box";
-                    el.innerText = num;
+                    el.innerHTML = `<div>${num}</div>`;
                 }
             }
         });
 
-        // Reset Logic
         document.getElementById("resetBtn").onclick = () => {
             if(confirm("ล้างข้อมูลทั้งหมด?") && prompt("รหัสผ่าน Admin:") === "987654321") {
                 remove(ref(db, 'reservations')).then(() => alert("ล้างเรียบร้อย"));
@@ -243,5 +252,3 @@
     </script>
 </body>
 </html>
-
-การปรับปรุงครั้งนี้จะทำให้ระบบดูเป็นแอปพลิเคชันมือถือระดับมืออาชีพมากขึ้น เข้ากับสัดส่วนหน้าจอแนวตั้งได้อย่างไร้ที่ติครับ! ลองนำไปอัปเดตดูนะครับ หากต้องการปรับจุดไหนเพิ่มบอกได้เลยครับ
