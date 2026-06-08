@@ -10,7 +10,8 @@
     
     <style>
         :root {
-            --primary: #10b981;
+            /* เปลี่ยนสีหลักจากเขียวเป็นเหลืองทอง */
+            --primary: #ffcc00; 
             --danger: #ef4444;
             --bg: #f1f5f9;
         }
@@ -78,7 +79,7 @@
 
         .box {
             background: var(--primary);
-            color: white;
+            color: #000000; /* เปลี่ยนตัวหนังสือเป็นสีดำ */
             aspect-ratio: 1 / 1.1;
             border-radius: 8px;
             display: flex;
@@ -86,7 +87,7 @@
             justify-content: center;
             align-items: center;
             font-weight: bold;
-            box-shadow: 0 3px 0 #059669;
+            box-shadow: 0 3px 0 #cc9900; /* เปลี่ยนเงาเป็นสีเหลืองเข้ม */
             cursor: pointer;
             transition: transform 0.1s;
             overflow: hidden;
@@ -99,8 +100,10 @@
             line-height: 1;
         }
 
+        /* เมื่อกล่องถูกจองแล้ว (สีแดง) */
         .box.taken {
             background: var(--danger);
+            color: white; /* บังคับให้ตัวหนังสือในกล่องแดงเป็นสีขาวเพื่อให้อ่านง่าย */
             box-shadow: 0 3px 0 #b91c1c;
             padding: 0;
             justify-content: flex-end;
@@ -112,6 +115,7 @@
             opacity: 0.95;
         }
 
+        /* ป้ายชื่อ */
         .name {
             font-size: clamp(0.7rem, 3.5vw, 0.95rem);
             font-weight: 700;
@@ -339,15 +343,12 @@
         };
         checkMyChoice();
 
-        // ---------------------------------------------------
-        // อัปเดตสูตรนับถอยหลังให้แปลงชั่วโมงเป็น "วัน" เรียบร้อยครับ
-        // ---------------------------------------------------
         setInterval(() => {
             const diff = drawTime - Date.now();
             if(diff < 0) { document.getElementById("timer").innerText = "ปิดรับแทงแล้ว"; return; }
             
-            const d = Math.floor(diff / 86400000); // คำนวณวัน
-            const h = Math.floor((diff % 86400000) / 3600000); // คำนวณชั่วโมงที่เหลือจากวัน
+            const d = Math.floor(diff / 86400000);
+            const h = Math.floor((diff % 86400000) / 3600000);
             const m = Math.floor((diff % 3600000) / 60000);
             const s = Math.floor((diff % 60000) / 1000);
             
