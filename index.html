@@ -13,6 +13,7 @@
             --primary: #ffcc00; 
             --danger: #ef4444;
             --bg: #f1f5f9;
+            --admin: #3b82f6; /* สีฟ้าสำหรับ Admin */
         }
 
         * { 
@@ -30,30 +31,56 @@
             width: 100vw;
         }
 
+        /* -------------------------------------
+           ส่วน Header และ Login Button
+        ---------------------------------------- */
         header {
             background: #1e293b;
             color: white;
-            padding: 10px;
+            padding: 15px 10px; /* เพิ่ม padding ให้พอดีกับปุ่ม */
             position: sticky;
             top: 0;
             z-index: 100;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             width: 100%;
+        }
+
+        .header-content {
+            flex-grow: 1;
+            text-align: center;
         }
 
         header h1 {
             font-family: 'Prompt', sans-serif;
-            font-size: clamp(1.1rem, 3vw, 1.8rem);
+            font-size: clamp(1rem, 3vw, 1.5rem);
             margin-bottom: 2px;
         }
 
         .timer-bar {
-            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            font-size: clamp(0.8rem, 2vw, 1rem);
             color: #fbbf24;
             font-weight: bold;
         }
 
+        /* ปุ่ม Login Admin */
+        .admin-login-btn {
+            background: transparent;
+            color: #94a3b8;
+            border: 1px solid #475569;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-family: 'Prompt', sans-serif;
+            font-size: 0.8rem;
+            cursor: pointer;
+            position: absolute;
+            right: 10px;
+            top: 15px;
+        }
+
+        /* แถบสถานะส่วนตัว */
         #my-status {
             display: none;
             background: #dcfce7;
@@ -66,6 +93,34 @@
             font-size: clamp(0.9rem, 2vw, 1.1rem);
         }
 
+        /* แถบสถานะ Admin */
+        #admin-status {
+            display: none;
+            background: #dbeafe; /* พื้นสีฟ้าอ่อน */
+            color: #1e40af; /* ตัวหนังสือสีฟ้าเข้ม */
+            padding: 10px;
+            font-weight: bold;
+            font-family: 'Prompt', sans-serif;
+            border-bottom: 2px solid #bfdbfe;
+            text-align: center;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+        }
+
+        .btn-logout {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 2px 10px;
+            border-radius: 4px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-family: 'Prompt', sans-serif;
+            font-size: 0.8rem;
+        }
+
+        /* -------------------------------------
+           ตาราง Grid
+        ---------------------------------------- */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -129,6 +184,9 @@
             box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
         }
 
+        /* -------------------------------------
+           Footer & ปุ่ม Reset
+        ---------------------------------------- */
         footer {
             padding: 20px 10px 40px;
             text-align: center;
@@ -136,18 +194,20 @@
         }
 
         .btn-reset {
+            display: none; /* ซ่อนไว้ก่อน จะโชว์เมื่อเป็น Admin */
             background: #dc2626;
             color: white;
             border: none;
-            padding: 8px 20px;
+            padding: 10px 25px;
             border-radius: 6px;
             font-family: 'Prompt', sans-serif;
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: bold;
             width: auto;
             min-width: 120px;
             cursor: pointer;
             box-shadow: 0 3px 0 #991b1b;
+            margin: 0 auto;
         }
         
         .btn-reset:active {
@@ -166,6 +226,7 @@
             .num-text { font-size: 1.6rem; }
             .box.taken .num-text { font-size: 1.3rem; }
             .name { font-size: 0.85rem; padding: 3px 2px; }
+            .admin-login-btn { top: 20px; right: 20px; padding: 8px 15px; font-size: 0.9rem; }
         }
 
         /* Custom Modal UI */
@@ -236,9 +297,18 @@
 <body>
 
     <header>
-        <h1 id="draw-title">ทายผล 2 ตัวล่าง</h1>
-        <div class="timer-bar" id="timer">นับถอยหลัง: ...</div>
+        <div class="header-content">
+            <h1 id="draw-title">ทายผล 2 ตัวล่าง</h1>
+            <div class="timer-bar" id="timer">นับถอยหลัง: ...</div>
+        </div>
+        <button class="admin-login-btn" id="loginBtn">Admin</button>
     </header>
+
+    <div id="admin-status">
+        <span style="font-size: 1.2rem;">🛠️ คุณอยู่ในโหมด Admin</span><br>
+        <span style="font-size: 0.9rem; font-weight: normal;">(จองเลขได้ไม่จำกัดจำนวน)</span>
+        <button class="btn-logout" id="logoutBtn">ออกจากระบบ</button>
+    </div>
 
     <div id="my-status">
         คุณเลือกหมายเลข: <span id="my-num" style="color: #ef4444; font-size: 1.2em;">--</span>
@@ -247,7 +317,7 @@
     <div class="grid-container" id="grid"></div>
 
     <footer>
-        <button class="btn-reset" id="resetBtn">RESET</button>
+        <button class="btn-reset" id="resetBtn">RESET งวดใหม่</button>
     </footer>
 
     <div id="custom-modal" class="modal-overlay">
@@ -281,10 +351,29 @@
 
         let drawID = "";
         let drawTime = 0;
+        let isAdmin = false; // ตัวแปรเก็บสถานะ Admin ของเครื่องนี้
 
-        // -----------------------------------------------------------
-        // ฟังก์ชันคำนวณหาวันที่ 1 หรือ 16 เวลาเที่ยงวัน ถัดไปโดยอัตโนมัติ
-        // -----------------------------------------------------------
+        // ตรวจสอบว่าเคย Login ไว้หรือไม่
+        if(sessionStorage.getItem("isAdmin") === "true") {
+            isAdmin = true;
+            updateAdminUI();
+        }
+
+        // ฟังก์ชันอัปเดตหน้าจอเมื่อเป็น Admin
+        function updateAdminUI() {
+            if (isAdmin) {
+                document.getElementById("loginBtn").style.display = "none";
+                document.getElementById("admin-status").style.display = "block";
+                document.getElementById("my-status").style.display = "none";
+                document.getElementById("resetBtn").style.display = "inline-block"; // โชว์ปุ่ม Reset
+            } else {
+                document.getElementById("loginBtn").style.display = "inline-block";
+                document.getElementById("admin-status").style.display = "none";
+                document.getElementById("resetBtn").style.display = "none"; // ซ่อนปุ่ม Reset
+                checkMyChoice(); // กลับไปเช็คสถานะการจองปกติ
+            }
+        }
+
         function getNextDrawInfo() {
             const now = new Date();
             let year = now.getFullYear();
@@ -324,7 +413,6 @@
             };
         }
 
-        // ดึงข้อมูล Context ประจำงวดจากส่วนกลาง Firebase
         onValue(ref(db, 'current_draw'), (snap) => {
             let drawInfo = snap.val();
             if (!drawInfo) {
@@ -336,12 +424,10 @@
             drawTime = drawInfo.timestamp;
             
             document.getElementById("draw-title").innerText = drawInfo.title;
-            checkMyChoice();
+            if(!isAdmin) checkMyChoice();
         });
 
-        // -----------------------------------------------------------
-
-        function showModal(type, msg) {
+        function showModal(type, msg, inputType = 'text') {
             return new Promise((resolve) => {
                 const modal = document.getElementById("custom-modal");
                 const msgEl = document.getElementById("modal-msg");
@@ -349,6 +435,7 @@
                 const okBtn = document.getElementById("modal-ok");
                 const cancelBtn = document.getElementById("modal-cancel");
 
+                inputEl.type = inputType; // เปลี่ยน type ของ input เช่น password
                 inputEl.onkeyup = (e) => { if(e.key === 'Enter') okBtn.click(); };
 
                 msgEl.innerHTML = msg.replace(/\n/g, '<br>');
@@ -378,7 +465,7 @@
         }
 
         const checkMyChoice = () => {
-            if (!drawID) return;
+            if (!drawID || isAdmin) return; // ถ้าเป็น Admin ไม่ต้องโชว์ว่าเลือกเลขอะไรไป
             const saved = localStorage.getItem(drawID);
             if(saved) {
                 document.getElementById("my-status").style.display = "block";
@@ -388,12 +475,11 @@
             }
         };
 
-        // นาฬิกานับถอยหลัง
         setInterval(() => {
             if (!drawTime) return;
             const diff = drawTime - Date.now();
             if(diff < 0) { 
-                document.getElementById("timer").innerText = "ปิดรับทายผลแล้ว (ระบบล็อกอยู่ รอแอดมิน RESET)"; 
+                document.getElementById("timer").innerText = "ปิดรับทายผลแล้ว (ล็อกระบบ รอ RESET)"; 
                 return; 
             }
             
@@ -415,12 +501,15 @@
             
             el.onclick = async () => {
                 if (!drawTime) return;
-                // ตรวจสอบระบบล็อกหลังเวลาเที่ยงวันประจำงวด
-                if(Date.now() > drawTime) {
-                    await showModal('alert', "หมดเวลาทายผลของงวดนี้แล้วครับ\nระบบถูกล็อกอยู่ จนกว่าแอดมินจะกดปุ่ม RESET");
+                
+                // ตรวจสอบระบบล็อก ถ้าหมดเวลาและไม่ได้เป็น Admin
+                if(Date.now() > drawTime && !isAdmin) {
+                    await showModal('alert', "หมดเวลาทายผลของงวดนี้แล้วครับ\nระบบถูกล็อกอยู่ จนกว่าจะเริ่มงวดใหม่");
                     return;
                 }
-                if(localStorage.getItem(drawID)) {
+                
+                // ตรวจสอบสิทธิ์ 1 เครื่อง / 1 หมายเลข (ถ้าเป็น Admin จะข้ามกฎข้อนี้ไปเลย)
+                if(localStorage.getItem(drawID) && !isAdmin) {
                     await showModal('alert', "คุณใช้สิทธิ์ไปแล้วที่หมายเลข " + localStorage.getItem(drawID));
                     return;
                 }
@@ -431,13 +520,20 @@
                     return;
                 }
 
-                const name = await showModal('prompt', `จองเลข ${num}\nกรุณาใส่ชื่อของคุณ:`);
+                // ถ้าเป็น Admin ให้พิมพ์บอกใน prompt ด้วย
+                let promptMsg = `จองเลข ${num}\nกรุณาใส่ชื่อ:`;
+                if(isAdmin) promptMsg = `[โหมด Admin]\nจองเลข ${num} แทนลูกค้า\nกรุณาใส่ชื่อลูกค้า:`;
+
+                const name = await showModal('prompt', promptMsg);
                 
                 if(name && name.trim()) {
                     set(ref(db, 'reservations/'+num), name.trim()).then(async () => {
-                        localStorage.setItem(drawID, num);
-                        checkMyChoice();
-                        await showModal('alert', "บันทึกข้อมูลเรียบร้อย ขอให้โชคดีครับ!");
+                        // บันทึกการจำเครื่อง เฉพาะกรณีไม่ใช่ Admin
+                        if(!isAdmin) {
+                            localStorage.setItem(drawID, num);
+                            checkMyChoice();
+                        }
+                        await showModal('alert', "บันทึกข้อมูลเรียบร้อย!");
                     });
                 }
             };
@@ -449,7 +545,7 @@
             
             if (Object.keys(data).length === 0 && drawID) {
                 localStorage.removeItem(drawID);
-                checkMyChoice();
+                if(!isAdmin) checkMyChoice();
             }
 
             for(let i=0; i<100; i++) {
@@ -465,24 +561,45 @@
             }
         });
 
-        // ปุ่ม RESET ปลดล็อกและคำนวณงวดใหม่ถัดไปในระบบทันที
+        // -----------------------------------------------------------
+        // ระบบ Login และ Logout
+        // -----------------------------------------------------------
+        document.getElementById("loginBtn").onclick = async () => {
+            // ใช้ inputType เป็น password เพื่อซ่อนรหัสขณะพิมพ์
+            const password = await showModal('prompt', "กรุณาใส่รหัสผ่านเพื่อเข้าสู่ระบบ Admin:", 'password');
+            if(password === "987654321") {
+                isAdmin = true;
+                sessionStorage.setItem("isAdmin", "true"); // จำค่าไว้ตอนโหลดหน้าเว็บใหม่
+                updateAdminUI();
+                await showModal('alert', "เข้าสู่ระบบ Admin สำเร็จ!");
+            } else if(password !== null) {
+                await showModal('alert', "รหัสผ่านไม่ถูกต้อง!");
+            }
+        };
+
+        document.getElementById("logoutBtn").onclick = async () => {
+            isAdmin = false;
+            sessionStorage.removeItem("isAdmin");
+            updateAdminUI();
+            await showModal('alert', "ออกจากระบบ Admin แล้ว\nกลับสู่โหมดผู้ใช้งานปกติ");
+        };
+
+        // -----------------------------------------------------------
+        // ปุ่ม RESET (ใช้งานได้เฉพาะ Admin)
+        // -----------------------------------------------------------
         document.getElementById("resetBtn").onclick = async () => {
-            const isConfirm = await showModal('confirm', "คุณต้องการล้างข้อมูลทั้งหมดเพื่อเริ่มงวดใหม่ใช่หรือไม่?");
+            if(!isAdmin) return; // ดักไว้อีกชั้น
+            
+            const isConfirm = await showModal('confirm', "คุณต้องการล้างข้อมูลทั้งหมดเพื่อเริ่มงวดใหม่ใช่หรือไม่?\n\n(ไม่จำเป็นต้องใส่รหัสผ่านอีก เพราะล็อกอินแล้ว)");
             
             if(isConfirm) {
-                const password = await showModal('prompt', "กรุณาใส่รหัสผ่าน Admin:");
+                await remove(ref(db, 'reservations'));
                 
-                if(password === "987654321") {
-                    await remove(ref(db, 'reservations'));
-                    
-                    // คำนวณขยับไปงวดถัดไป และปลดล็อกระบบโดยอัตโนมัติ
-                    const nextDrawInfo = getNextDrawInfo();
-                    await set(ref(db, 'current_draw'), nextDrawInfo);
-                    
-                    await showModal('alert', "RESET ระบบสำเร็จ! ปลดล็อกตารางและเปิดงวดถัดไปเรียบร้อยแล้ว");
-                } else if(password !== null) {
-                    await showModal('alert', "รหัสผ่านไม่ถูกต้อง!");
-                }
+                // คำนวณงวดถัดไป
+                const nextDrawInfo = getNextDrawInfo();
+                await set(ref(db, 'current_draw'), nextDrawInfo);
+                
+                await showModal('alert', "RESET ระบบสำเร็จ! ปลดล็อกตารางและเปิดงวดถัดไปเรียบร้อยแล้ว");
             }
         };
     </script>
