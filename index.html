@@ -13,7 +13,7 @@
             --primary: #ffcc00; 
             --danger: #ef4444;
             --bg: #f1f5f9;
-            --admin: #3b82f6; /* สีฟ้าสำหรับ Admin */
+            --admin: #3b82f6; 
         }
 
         * { 
@@ -31,13 +31,10 @@
             width: 100vw;
         }
 
-        /* -------------------------------------
-           ส่วน Header และ Login Button
-        ---------------------------------------- */
         header {
             background: #1e293b;
             color: white;
-            padding: 15px 10px; /* เพิ่ม padding ให้พอดีกับปุ่ม */
+            padding: 15px 10px;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -65,7 +62,6 @@
             font-weight: bold;
         }
 
-        /* ปุ่ม Login Admin */
         .admin-login-btn {
             background: transparent;
             color: #94a3b8;
@@ -80,7 +76,6 @@
             top: 15px;
         }
 
-        /* แถบสถานะส่วนตัว */
         #my-status {
             display: none;
             background: #dcfce7;
@@ -93,11 +88,10 @@
             font-size: clamp(0.9rem, 2vw, 1.1rem);
         }
 
-        /* แถบสถานะ Admin */
         #admin-status {
             display: none;
-            background: #dbeafe; /* พื้นสีฟ้าอ่อน */
-            color: #1e40af; /* ตัวหนังสือสีฟ้าเข้ม */
+            background: #dbeafe; 
+            color: #1e40af; 
             padding: 10px;
             font-weight: bold;
             font-family: 'Prompt', sans-serif;
@@ -118,9 +112,6 @@
             font-size: 0.8rem;
         }
 
-        /* -------------------------------------
-           ตาราง Grid
-        ---------------------------------------- */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -184,9 +175,6 @@
             box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
         }
 
-        /* -------------------------------------
-           Footer & ปุ่ม Reset
-        ---------------------------------------- */
         footer {
             padding: 20px 10px 40px;
             text-align: center;
@@ -194,7 +182,7 @@
         }
 
         .btn-reset {
-            display: none; /* ซ่อนไว้ก่อน จะโชว์เมื่อเป็น Admin */
+            display: none; 
             background: #dc2626;
             color: white;
             border: none;
@@ -229,7 +217,6 @@
             .admin-login-btn { top: 20px; right: 20px; padding: 8px 15px; font-size: 0.9rem; }
         }
 
-        /* Custom Modal UI */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -305,8 +292,8 @@
     </header>
 
     <div id="admin-status">
-        <span style="font-size: 1.2rem;">🛠️ คุณอยู่ในโหมด Admin</span><br>
-        <span style="font-size: 0.9rem; font-weight: normal;">(จองเลขได้ไม่จำกัดจำนวน)</span>
+        <span style="font-size: 1.2rem;">🛠️ โหมดจัดการ Admin</span><br>
+        <span style="font-size: 0.9rem; font-weight: normal;">(จอง/แก้ไข/ยกเลิก ได้ไม่จำกัด)</span>
         <button class="btn-logout" id="logoutBtn">ออกจากระบบ</button>
     </div>
 
@@ -351,26 +338,24 @@
 
         let drawID = "";
         let drawTime = 0;
-        let isAdmin = false; // ตัวแปรเก็บสถานะ Admin ของเครื่องนี้
+        let isAdmin = false; 
 
-        // ตรวจสอบว่าเคย Login ไว้หรือไม่
         if(sessionStorage.getItem("isAdmin") === "true") {
             isAdmin = true;
             updateAdminUI();
         }
 
-        // ฟังก์ชันอัปเดตหน้าจอเมื่อเป็น Admin
         function updateAdminUI() {
             if (isAdmin) {
                 document.getElementById("loginBtn").style.display = "none";
                 document.getElementById("admin-status").style.display = "block";
                 document.getElementById("my-status").style.display = "none";
-                document.getElementById("resetBtn").style.display = "inline-block"; // โชว์ปุ่ม Reset
+                document.getElementById("resetBtn").style.display = "inline-block";
             } else {
                 document.getElementById("loginBtn").style.display = "inline-block";
                 document.getElementById("admin-status").style.display = "none";
-                document.getElementById("resetBtn").style.display = "none"; // ซ่อนปุ่ม Reset
-                checkMyChoice(); // กลับไปเช็คสถานะการจองปกติ
+                document.getElementById("resetBtn").style.display = "none"; 
+                checkMyChoice(); 
             }
         }
 
@@ -427,7 +412,8 @@
             if(!isAdmin) checkMyChoice();
         });
 
-        function showModal(type, msg, inputType = 'text') {
+        // ปรับปรุงฟังก์ชัน showModal ให้รองรับ Default Value (สำหรับแก้ไขชื่อ)
+        function showModal(type, msg, inputType = 'text', defaultValue = '') {
             return new Promise((resolve) => {
                 const modal = document.getElementById("custom-modal");
                 const msgEl = document.getElementById("modal-msg");
@@ -435,7 +421,7 @@
                 const okBtn = document.getElementById("modal-ok");
                 const cancelBtn = document.getElementById("modal-cancel");
 
-                inputEl.type = inputType; // เปลี่ยน type ของ input เช่น password
+                inputEl.type = inputType;
                 inputEl.onkeyup = (e) => { if(e.key === 'Enter') okBtn.click(); };
 
                 msgEl.innerHTML = msg.replace(/\n/g, '<br>');
@@ -448,10 +434,14 @@
                     cancelBtn.onclick = () => { modal.style.display = "none"; resolve(null); };
                 } else if (type === 'prompt') {
                     inputEl.style.display = "block";
-                    inputEl.value = "";
+                    inputEl.value = defaultValue; // กำหนดค่าเริ่มต้น
                     okBtn.style.display = "inline-block";
                     cancelBtn.innerText = "ปิดหน้าต่าง";
-                    setTimeout(() => inputEl.focus(), 100);
+                    setTimeout(() => {
+                        inputEl.focus();
+                        // คลุมดำข้อความเดิมเพื่อให้พิมพ์ทับได้ง่าย
+                        if(defaultValue) inputEl.select();
+                    }, 100);
                     okBtn.onclick = () => { modal.style.display = "none"; resolve(inputEl.value); };
                     cancelBtn.onclick = () => { modal.style.display = "none"; resolve(null); };
                 } else if (type === 'confirm') {
@@ -465,7 +455,7 @@
         }
 
         const checkMyChoice = () => {
-            if (!drawID || isAdmin) return; // ถ้าเป็น Admin ไม่ต้องโชว์ว่าเลือกเลขอะไรไป
+            if (!drawID || isAdmin) return; 
             const saved = localStorage.getItem(drawID);
             if(saved) {
                 document.getElementById("my-status").style.display = "block";
@@ -508,19 +498,50 @@
                     return;
                 }
                 
-                // ตรวจสอบสิทธิ์ 1 เครื่อง / 1 หมายเลข (ถ้าเป็น Admin จะข้ามกฎข้อนี้ไปเลย)
+                // ตรวจสอบสิทธิ์ 1 เครื่อง / 1 หมายเลข
                 if(localStorage.getItem(drawID) && !isAdmin) {
                     await showModal('alert', "คุณใช้สิทธิ์ไปแล้วที่หมายเลข " + localStorage.getItem(drawID));
                     return;
                 }
                 
                 const snap = await get(ref(db, 'reservations/'+num));
+                
+                // -----------------------------------------------------
+                // ส่วนของกล่องที่ถูกจองแล้ว (Admin เท่านั้นที่แกะเข้าไปได้)
+                // -----------------------------------------------------
                 if(snap.exists()) {
-                    await showModal('alert', "เสียใจด้วย หมายเลขนี้ไม่ว่างแล้วครับ");
-                    return;
+                    if (isAdmin) {
+                        const currentName = snap.val();
+                        const editMsg = `[โหมด Admin] แก้ไขหมายเลข ${num}\n\n- พิมพ์ชื่อใหม่เพื่อแก้ไข\n- ลบข้อความออกให้ว่างเปล่าเพื่อ 'ยกเลิกการจอง'`;
+                        
+                        const newName = await showModal('prompt', editMsg, 'text', currentName);
+                        
+                        // ถ้าแอดมินกดตกลง
+                        if (newName !== null) {
+                            if (newName.trim() === "") {
+                                // กรณียกเลิกการจอง (ลบว่างเปล่า)
+                                const confirmDel = await showModal('confirm', `ยืนยันการ "ยกเลิก" จองหมายเลข ${num} ใช่หรือไม่?\nหมายเลขจะกลับมาว่างอีกครั้ง`);
+                                if (confirmDel) {
+                                    await remove(ref(db, 'reservations/'+num));
+                                    await showModal('alert', `ทำรายการสำเร็จ! ยกเลิกการจองเลข ${num} แล้ว`);
+                                }
+                            } else if (newName.trim() !== currentName) {
+                                // กรณีแก้ชื่อ
+                                await set(ref(db, 'reservations/'+num), newName.trim());
+                                await showModal('alert', "บันทึกการแก้ไขชื่อเรียบร้อยแล้ว!");
+                            }
+                        }
+                        return;
+                    } else {
+                        // ผู้ใช้ธรรมดา
+                        await showModal('alert', "เสียใจด้วย หมายเลขนี้ไม่ว่างแล้วครับ");
+                        return;
+                    }
                 }
 
-                // ถ้าเป็น Admin ให้พิมพ์บอกใน prompt ด้วย
+                // -----------------------------------------------------
+                // ส่วนของการจองกล่องว่าง (ยังไม่มีใครจอง)
+                // -----------------------------------------------------
                 let promptMsg = `จองเลข ${num}\nกรุณาใส่ชื่อ:`;
                 if(isAdmin) promptMsg = `[โหมด Admin]\nจองเลข ${num} แทนลูกค้า\nกรุณาใส่ชื่อลูกค้า:`;
 
@@ -528,7 +549,6 @@
                 
                 if(name && name.trim()) {
                     set(ref(db, 'reservations/'+num), name.trim()).then(async () => {
-                        // บันทึกการจำเครื่อง เฉพาะกรณีไม่ใช่ Admin
                         if(!isAdmin) {
                             localStorage.setItem(drawID, num);
                             checkMyChoice();
@@ -540,14 +560,25 @@
             grid.appendChild(el);
         }
 
+        // ระบบ Realtime ตรวจจับการเปลี่ยนแปลง
         onValue(ref(db, 'reservations'), (snap) => {
             const data = snap.val() || {};
             
+            // 1. ตรวจจับการ RESET ล้างทั้งฐาน (แอดมินกด RESET)
             if (Object.keys(data).length === 0 && drawID) {
                 localStorage.removeItem(drawID);
                 if(!isAdmin) checkMyChoice();
+            } 
+            // 2. ตรวจจับเผื่อกรณี Admin ลบชื่อผู้ใช้งานรายบุคคล คืนสิทธิ์ให้เขาทันที (Auto-Refund)
+            else if (drawID) {
+                const mySavedNum = localStorage.getItem(drawID);
+                if (mySavedNum && !data[mySavedNum]) {
+                    localStorage.removeItem(drawID);
+                    if(!isAdmin) checkMyChoice();
+                }
             }
 
+            // วาดตารางใหม่
             for(let i=0; i<100; i++) {
                 const num = i.toString().padStart(2, '0');
                 const el = document.getElementById("n-" + num);
@@ -562,14 +593,11 @@
         });
 
         // -----------------------------------------------------------
-        // ระบบ Login และ Logout
-        // -----------------------------------------------------------
         document.getElementById("loginBtn").onclick = async () => {
-            // ใช้ inputType เป็น password เพื่อซ่อนรหัสขณะพิมพ์
             const password = await showModal('prompt', "กรุณาใส่รหัสผ่านเพื่อเข้าสู่ระบบ Admin:", 'password');
             if(password === "987654321") {
                 isAdmin = true;
-                sessionStorage.setItem("isAdmin", "true"); // จำค่าไว้ตอนโหลดหน้าเว็บใหม่
+                sessionStorage.setItem("isAdmin", "true"); 
                 updateAdminUI();
                 await showModal('alert', "เข้าสู่ระบบ Admin สำเร็จ!");
             } else if(password !== null) {
@@ -584,21 +612,14 @@
             await showModal('alert', "ออกจากระบบ Admin แล้ว\nกลับสู่โหมดผู้ใช้งานปกติ");
         };
 
-        // -----------------------------------------------------------
-        // ปุ่ม RESET (ใช้งานได้เฉพาะ Admin)
-        // -----------------------------------------------------------
         document.getElementById("resetBtn").onclick = async () => {
-            if(!isAdmin) return; // ดักไว้อีกชั้น
-            
+            if(!isAdmin) return;
             const isConfirm = await showModal('confirm', "คุณต้องการล้างข้อมูลทั้งหมดเพื่อเริ่มงวดใหม่ใช่หรือไม่?\n\n(ไม่จำเป็นต้องใส่รหัสผ่านอีก เพราะล็อกอินแล้ว)");
             
             if(isConfirm) {
                 await remove(ref(db, 'reservations'));
-                
-                // คำนวณงวดถัดไป
                 const nextDrawInfo = getNextDrawInfo();
                 await set(ref(db, 'current_draw'), nextDrawInfo);
-                
                 await showModal('alert', "RESET ระบบสำเร็จ! ปลดล็อกตารางและเปิดงวดถัดไปเรียบร้อยแล้ว");
             }
         };
